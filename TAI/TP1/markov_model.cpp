@@ -2,13 +2,18 @@
 #include "markov_model.hpp"
 
 #include <iostream>
-
+#include <string>
+#include <cstdio>
 // using namespace std; <- not recommended, may create ambiguity
 
 // constructor
+
+
+
 MarkovModel::MarkovModel (const unsigned &k, const unsigned &alpha) :
     k(k), alpha(alpha)
 {
+    
 }
 
 // destructor
@@ -23,13 +28,58 @@ MarkovModel &operator>> (std::ifstream &fileStream, MarkovModel &model)
     // iterates over every character in the file
     // and counts how many times each character appears
     // TODO: replace with (k) sequence of characters
+    
+    
+    
+    
     while (fileStream.get(letter))
-    {
+    {   
+        
         std::unordered_map<char, unsigned>::iterator iterator = model.frequency.find(letter);
         if (iterator == model.frequency.end())
             model.frequency[letter] = 1;
         else
             ++iterator->second; // slightly more efficient than "++frequency[letter]"";
-    }
+    
+        model.content += letter;
+    }    
+    std::cout << model.content << std::endl;
     return model;
 }
+
+void MarkovModel::analyze(){
+    this->total=0;
+
+    for(int i = 0; i < this->content.length()-k; i++){
+        this->total++;
+        charData temp;
+        temp.text = "";
+        temp.count = 0;
+        for(int j = 0; j<this->k; j++){
+            temp.text += this->content[i+j];
+            
+        }
+        temp.c = this->content[i + k ];
+        for (charData &str : this->data){
+            if(str.text == temp.text && temp.c == str.c){
+                //std::cout << "ola" << std::endl;
+                str.count++;
+                break;
+            }
+        }
+        
+        if(temp.count != -1){
+            temp.count = 1;
+            data.push_back(temp);
+        }
+        
+        
+        //
+        
+    }
+    for(auto &str : this->data){
+        std::cout << str.text << " - " << str.c <<  " - " << (float(str.count) / float(this->total)) << std::endl;
+    }
+    
+}
+

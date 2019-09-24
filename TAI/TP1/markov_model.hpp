@@ -4,6 +4,14 @@
 
 #include <fstream>
 #include <unordered_map>
+#include <string>
+#include <list>
+
+struct charData {
+    char c;
+    std::string text;
+    int count;
+};
 
 // this class represents a markov model
 // an "unsigned" variable is equivelant to an "unsinged int"
@@ -16,6 +24,9 @@ private:
 
     unsigned k, alpha;
     Frequency frequency;
+    std::string content;
+    std::list <charData> data;
+    int total;
 
 public:
     // constructor
@@ -27,6 +38,8 @@ public:
     // reads file and builds model
     // marking a function as friend allows that function to use private members of the class
     friend MarkovModel &operator>> (std::ifstream &, MarkovModel &);
+
+    void analyze ();
 
     // Writting a "begin" and "end" function allows the use of a "for each"
     // loop over an instance of this class. Making this functions return

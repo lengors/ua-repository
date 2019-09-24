@@ -40,6 +40,8 @@ int main (int argc, char *argv[])
     // Processes file and creates model
     fileStream >> model;
 
+    model.analyze();
+
     // Closes file
     fileStream.close();
 
