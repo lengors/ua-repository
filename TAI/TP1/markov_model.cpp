@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <cstdio>
+
 // using namespace std; <- not recommended, may create ambiguity
 
 // constructor
@@ -49,8 +49,9 @@ MarkovModel &operator>> (std::ifstream &fileStream, MarkovModel &model)
 
 void MarkovModel::analyze(){
     this->total=0;
-
+	bool exist = false;
     for(int i = 0; i < this->content.length()-k; i++){
+		exist = false;
         this->total++;
         charData temp;
         temp.text = "";
@@ -62,13 +63,14 @@ void MarkovModel::analyze(){
         temp.c = this->content[i + k ];
         for (charData &str : this->data){
             if(str.text == temp.text && temp.c == str.c){
-                //std::cout << "ola" << std::endl;
+                
+				exist = true;
                 str.count++;
                 break;
             }
         }
         
-        if(temp.count != -1){
+        if(!exist){
             temp.count = 1;
             data.push_back(temp);
         }
