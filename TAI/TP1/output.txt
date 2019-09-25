@@ -1,2 +1,9 @@
- k = 1
- alpha = 1
+k = 1
+alpha = 1
+
+b - 2
+a - 6
+
+a - a - 3
+a - b - 2
+b - a - 2

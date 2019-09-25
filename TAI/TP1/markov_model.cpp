@@ -88,8 +88,19 @@ void MarkovModel::analyze(){
 void MarkovModel::writeToFile(std::string filename){
     std::ofstream tempfile;
     tempfile.open("output.txt");
-    tempfile << " k = " << k << "\n";
-    tempfile << " alpha = " << alpha << "\n";
+    tempfile << "k = " << k << "\n";
+    tempfile << "alpha = " << alpha << "\n";
+    tempfile << "\n";
+    for (auto& it : frequency){
+        tempfile << it.first << " - " << it.second << "\n";
+    }
+    tempfile << "\n";
+
+    for (auto& str : data){
+        tempfile << str.text << " - " << str.c << " - " << str.count << "\n";
+    }
+
+
 }
 
 
