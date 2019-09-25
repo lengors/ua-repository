@@ -41,6 +41,8 @@ public:
 
     void analyze ();
 
+    void writeToFile(std::string filename);
+
     // Writting a "begin" and "end" function allows the use of a "for each"
     // loop over an instance of this class. Making this functions return
     // a const iterator allows the use of the "for each" loop even if an instance

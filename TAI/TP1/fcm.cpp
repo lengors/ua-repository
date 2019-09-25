@@ -6,6 +6,9 @@
 // includes MarkovModel class
 #include "markov_model.hpp"
 
+
+
+
 int main (int argc, char *argv[])
 {
     // Checks if at least two arguments exist (k and alpha)
@@ -47,8 +50,7 @@ int main (int argc, char *argv[])
 
     // Prints all letters and respective amount
     // "auto" tells the compiler to determine the type
-    for (const auto &letterCount : model)
-        std::cout << letterCount.first << ": " << letterCount.second << std::endl;
+    model.writeToFile("output.txt");
 
     return 0;
 }

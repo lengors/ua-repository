@@ -85,3 +85,11 @@ void MarkovModel::analyze(){
     
 }
 
+void MarkovModel::writeToFile(std::string filename){
+    std::ofstream tempfile;
+    tempfile.open("output.txt");
+    tempfile << " k = " << k << "\n";
+    tempfile << " alpha = " << alpha << "\n";
+}
+
+
