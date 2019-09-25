@@ -56,6 +56,7 @@ void MarkovModel::analyze(){
         charData temp;
         temp.text = "";
         temp.count = 0;
+        temp.total = 0;
         for(int j = 0; j<this->k; j++){
             temp.text += this->content[i+j];
             
@@ -66,21 +67,37 @@ void MarkovModel::analyze(){
                 
 				exist = true;
                 str.count++;
+                str.total ++;
                 break;
+            }else if(str.text == temp.text && temp.c != str.c){
+                temp.total = str.total;
             }
         }
         
         if(!exist){
+            temp.total++;
             temp.count = 1;
             data.push_back(temp);
         }
-        
+        this->charTotals[temp.text]++;
         
         //
         
     }
+     std::cout << " char appearances " << std::endl;
     for(auto &str : this->data){
-        std::cout << str.text << " - " << str.c <<  " - " << (float(str.count) / float(this->total)) << std::endl;
+       //std::cout << "Text" << " - " << "Char" <<  " - " << "N" << " - " << "T" << std::endl;
+        std::cout << str.text << " - " << str.c <<  " - " << str.count  << std::endl;
+    }
+
+     std::cout << " Text total appearances " << std::endl;
+     for (auto it=charTotals.begin(); it!=charTotals.end(); ++it){
+        std::cout << it->first << " => " << it->second << '\n';
+     }
+      std::cout << " Conditional Probability " << std::endl;
+    for(auto &str : data){
+        std::cout << "P("<< str.c << "|" << str.text << ") = "<< "(" << str.count << "+" << alpha << ") / (" << charTotals[str.text] 
+        << "+" << alpha << "*" << "2 \"size of alphabet\" ) = " << ((float)str.count + alpha) / ((alpha*2) + charTotals[str.text]) << std::endl;
     }
     
 }
@@ -99,6 +116,7 @@ void MarkovModel::writeToFile(std::string filename){
     for (auto& str : data){
         tempfile << str.text << " - " << str.c << " - " << str.count << "\n";
     }
+   
 
 
 }

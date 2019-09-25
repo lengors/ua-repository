@@ -6,11 +6,13 @@
 #include <unordered_map>
 #include <string>
 #include <list>
+#include <map>
 
 struct charData {
     char c;
     std::string text;
     int count;
+    int total;
 };
 
 // this class represents a markov model
@@ -25,6 +27,7 @@ private:
     unsigned k, alpha;
     Frequency frequency;
     std::string content;
+    std::map<std::string,int> charTotals;
     std::list <charData> data;
     int total;
 
