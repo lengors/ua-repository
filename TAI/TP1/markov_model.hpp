@@ -6,10 +6,11 @@
 #include <unordered_map>
 #include <string>
 #include <list>
+#include <map>
 
-struct charData {
+
+struct CharData{
     char c;
-    std::string text;
     int count;
 };
 
@@ -25,8 +26,9 @@ private:
     unsigned k, alpha;
     Frequency frequency;
     std::string content;
-    std::list <charData> data;
-    int total;
+   
+    std::map<std::string,std::list <CharData>> tableMap;
+   
 
 public:
     // constructor
