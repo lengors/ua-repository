@@ -8,11 +8,10 @@
 #include <list>
 #include <map>
 
-struct charData {
+
+struct CharData{
     char c;
-    std::string text;
     int count;
-    int total;
 };
 
 // this class represents a markov model
@@ -27,9 +26,9 @@ private:
     unsigned k, alpha;
     Frequency frequency;
     std::string content;
-    std::map<std::string,int> charTotals;
-    std::list <charData> data;
-    int total;
+   
+    std::map<std::string,std::list <CharData>> tableMap;
+   
 
 public:
     // constructor

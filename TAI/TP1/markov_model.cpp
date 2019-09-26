@@ -48,57 +48,57 @@ MarkovModel &operator>> (std::ifstream &fileStream, MarkovModel &model)
 }
 
 void MarkovModel::analyze(){
-    this->total=0;
+    
 	bool exist = false;
     for(int i = 0; i < this->content.length()-k; i++){
 		exist = false;
-        this->total++;
-        charData temp;
-        temp.text = "";
+       
+        CharData temp;
+        std::string text = "";
         temp.count = 0;
-        temp.total = 0;
+     
         for(int j = 0; j<this->k; j++){
-            temp.text += this->content[i+j];
+            text += this->content[i+j];
             
         }
         temp.c = this->content[i + k ];
-        for (charData &str : this->data){
-            if(str.text == temp.text && temp.c == str.c){
-                
-				exist = true;
-                str.count++;
-                str.total ++;
+        for(auto &obj : tableMap[text]){
+            if(obj.c == temp.c){
+                obj.count++;
+                exist = true;
                 break;
-            }else if(str.text == temp.text && temp.c != str.c){
-                temp.total = str.total;
             }
         }
-        
         if(!exist){
-            temp.total++;
-            temp.count = 1;
-            data.push_back(temp);
+            temp.count=1;
+            tableMap[text].push_back(temp);
         }
-        this->charTotals[temp.text]++;
         
-        //
         
     }
-     std::cout << " char appearances " << std::endl;
-    for(auto &str : this->data){
-       //std::cout << "Text" << " - " << "Char" <<  " - " << "N" << " - " << "T" << std::endl;
-        std::cout << str.text << " - " << str.c <<  " - " << str.count  << std::endl;
-    }
-
+     
+   
      std::cout << " Text total appearances " << std::endl;
-     for (auto it=charTotals.begin(); it!=charTotals.end(); ++it){
-        std::cout << it->first << " => " << it->second << '\n';
+     for (auto it=tableMap.begin(); it!=tableMap.end(); ++it){
+        std::cout << it->first << "-";
+        for(auto &symbol : tableMap[it->first]){
+            std::cout <<"[" <<symbol.c <<"," << symbol.count<<"]"<<", ";
+        }
+        std::cout << ";\n";
      }
       std::cout << " Conditional Probability " << std::endl;
-    for(auto &str : data){
-        std::cout << "P("<< str.c << "|" << str.text << ") = "<< "(" << str.count << "+" << alpha << ") / (" << charTotals[str.text] 
-        << "+" << alpha << "*" << "2 \"size of alphabet\" ) = " << ((float)str.count + alpha) / ((alpha*2) + charTotals[str.text]) << std::endl;
+
+    for (auto it=tableMap.begin(); it!=tableMap.end(); ++it){
+        for(auto &obj : tableMap[it->first]){
+            int count = 0;
+            for (auto &obj2 : tableMap[it->first])
+                count+= obj2.count;
+            std::cout << it->first << " followed by " << obj.c << ":" << ((float)obj.count + alpha) / ((alpha*frequency.size()) + count) << std::endl;
+        }
     }
+
+
+   
     
 }
 
@@ -113,9 +113,9 @@ void MarkovModel::writeToFile(std::string filename){
     }
     tempfile << "\n";
 
-    for (auto& str : data){
-        tempfile << str.text << " - " << str.c << " - " << str.count << "\n";
-    }
+    // for (auto& str : data){
+    //     tempfile << str.text << " - " << str.c << " - " << str.count << "\n";
+    // }
    
 
 
