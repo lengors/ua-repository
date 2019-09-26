@@ -24,32 +24,57 @@ int main (int argc, char *argv[])
     // sets filename
     std::string filename = argc == 3 ? "test.txt" : argv[3];
 
-    // Creates file stream from filename
-    std::ifstream fileStream(filename);
-    
-    // If file doesn't exist display error and exit
-    if (!fileStream)
-    {
-        std::cerr << "Error: Specified file does't exist!" << std::endl;
-        return 1;
-    }
-
     // Creates markov model
     MarkovModel model(k, alpha);
 
-    // Processes file and creates model
-    fileStream >> model;
+    // Scope used to open, read an close file
+    // Close operation happens automatically at the end of the scope 
+    {
+        // Creates file stream from filename
+        std::ifstream ifstream(filename);
 
-    model.analyze();
+        // If file doesn't exist display error and exit
+        if (!ifstream)
+        {
+            std::cerr << "Error: Specified file does't exist!" << std::endl;
+            return 1;
+        }
 
-    // Closes file
-    fileStream.close();
+        // Processes file and creates model
+        ifstream >> model;
+    }
 
-    // Prints all letters and respective amount
-    // "auto" tells the compiler to determine the type
-    model.writeToFile("output.txt");
+    std::cout << " Text total appearances " << std::endl;
+    for (const auto &context : model)
+    {
+        std::cout << context.first << "-";
+        for (auto &event : context.second)
+            std::cout << "[" << event.get_character() << "," << event.get_count() << "]" << ", ";
+        std::cout << ";\n";
+    }
+    std::cout << " Conditional Probability " << std::endl;
 
-    std::cout << model.calcEntropy() << std::endl;
+    for (const auto &context : model)
+        for (auto &event : context.second)
+            std::cout << context.first << " followed by " << event.get_character() << ":" << model.get_probability(context, event) << std::endl;
+
+    // model.analyze(); -> code moved to operator>>
+    // model.writeToFile("output.txt"); -> code moved to operator<<
+
+    std::cout << model.get_entropy() << std::endl;
+
+    // TODO: remove this, just for testing
+    {
+        std::ofstream ofstream("output.txt", std::ios::binary);
+
+        if (!ofstream)
+        {
+            std::cerr << "Error: Save model failed!" << std::endl;
+            return 1;
+        }
+
+        ofstream << model;
+    }
 
     return 0;
 }

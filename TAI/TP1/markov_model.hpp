@@ -2,17 +2,17 @@
 // ensures that header is only included once
 #pragma once
 
-#include <fstream>
 #include <unordered_map>
+#include <unordered_set>
+#include <fstream>
 #include <string>
-#include <list>
-#include <map>
+#include <vector>
 
-
-struct CharData{
+/*struct CharData
+{
     char c;
     int count;
-};
+};*/
 
 // this class represents a markov model
 // an "unsigned" variable is equivelant to an "unsinged int"
@@ -21,31 +21,58 @@ class MarkovModel
 private:
     // Helps writting code allowing to write "Frequency"
     // insted of "std::unordered_map<char, unsigned>"
-    typedef std::unordered_map<char, unsigned> Frequency;
+    class Event
+    {
+    private:
+        char character;
+        unsigned count;
+    
+    public:
+        Event (const char &, const unsigned &);
+        Event (const char &);
+
+        unsigned operator+ (const MarkovModel::Event &) const;
+        Event &operator++ (void);
+
+        inline const char &get_character (void) const { return character; }
+        inline const unsigned &get_count (void) const { return count; }
+    };
+
+    typedef std::unordered_set<char> Alphabet;
+    typedef std::pair<std::string, std::vector<Event>> Context;
+    typedef std::unordered_map<std::string, std::vector<Event>> Frequency;
 
     unsigned k, alpha;
+    Alphabet alphabet;
     Frequency frequency;
-    std::string content;
-   
-    std::map<std::string,std::list <CharData>> tableMap;
-   
+    
+    // std::string content; -> since the analysis is now done in the operator>>
+    // there is no need to store the entire file in a string
+    // std::map<std::string, std::list<CharData>> tableMap; -> frequency is the current equivelant (it really is the same)
 
 public:
-    // constructor
+    // constructors
+    // used to build a new model
     MarkovModel (const unsigned &k, const unsigned &alpha);
+
+    // used to load a model from file
+    MarkovModel (void);
 
     // destructor
     ~MarkovModel (void);
 
-    // reads file and builds model
+    // reads stream and builds model
     // marking a function as friend allows that function to use private members of the class
-    friend MarkovModel &operator>> (std::ifstream &, MarkovModel &);
+    friend MarkovModel &operator>> (std::istream &, MarkovModel &);
 
-    void analyze ();
+    // writes model data to stream
+    friend std::ostream &operator<< (std::ostream &, const MarkovModel &);
 
-    void writeToFile(std::string filename);
-
-    float calcEntropy();
+    // void analyze (void); -> code moved to operator>>
+    // void writeToFile (std::string filename); -> code operator<<
+    
+    float get_probability (const Context &, const Event &) const;
+    float get_entropy (void);
 
     // Writting a "begin" and "end" function allows the use of a "for each"
     // loop over an instance of this class. Making this functions return
@@ -53,4 +80,6 @@ public:
     // is marked as a constant variable
     inline Frequency::const_iterator begin (void) const { return frequency.begin(); }
     inline Frequency::const_iterator end (void) const { return frequency.end(); }
+    inline const Alphabet &get_alphabet (void) const { return alphabet; }
+    inline const unsigned &get_alpha (void) const { return alpha; }
 };
