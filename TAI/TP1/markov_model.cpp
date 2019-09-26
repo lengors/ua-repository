@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <math.h>
 
 // using namespace std; <- not recommended, may create ambiguity
 
@@ -73,15 +74,9 @@ void MarkovModel::analyze(){
         if(!exist){
             temp.count = 1;
             data.push_back(temp);
-        }
+        }  
         
-        
-        //
-        
-    }
-    for(auto &str : this->data){
-        std::cout << str.text << " - " << str.c <<  " - " << (float(str.count) / float(this->total)) << std::endl;
-    }
+    }   
     
 }
 
@@ -101,6 +96,11 @@ void MarkovModel::writeToFile(std::string filename){
     }
 
 
+}
+
+
+float MarkovModel::calcEntropy(){
+    return log2(frequency.size());
 }
 
 

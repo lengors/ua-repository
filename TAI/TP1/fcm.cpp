@@ -6,9 +6,6 @@
 // includes MarkovModel class
 #include "markov_model.hpp"
 
-
-
-
 int main (int argc, char *argv[])
 {
     // Checks if at least two arguments exist (k and alpha)
@@ -51,6 +48,8 @@ int main (int argc, char *argv[])
     // Prints all letters and respective amount
     // "auto" tells the compiler to determine the type
     model.writeToFile("output.txt");
+
+    std::cout << model.calcEntropy() << std::endl;
 
     return 0;
 }

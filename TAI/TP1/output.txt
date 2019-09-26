@@ -1,9 +1,38 @@
-k = 1
+k = 3
 alpha = 1
 
-b - 2
-a - 6
 
-a - a - 3
-a - b - 2
-b - a - 2
+ - 1
+o - 1
+h - 1
+d - 3
+a - 9
+c - 1
+j - 2
+k - 1
+b - 4
+s - 3
+
+aab - a - 2
+aba - a - 1
+baa - a - 1
+aaa - b - 1
+aba - c - 1
+bac - a - 1
+aca - k - 1
+cak - j - 1
+akj - s - 1
+kjs - b - 1
+jsb - d - 1
+sbd - h - 1
+bdh - j - 1
+dhj - a - 1
+hja - b - 1
+jab - s - 1
+abs - d - 1
+bsd - a - 1
+sda - s - 1
+das - o - 1
+aso - d - 1
+sod - 
+ - 1
