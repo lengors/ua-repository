@@ -71,13 +71,6 @@ void MarkovModel::analyze(){
             }
         }
         if(!exist){
-<<<<<<< HEAD
-            temp.count = 1;
-            data.push_back(temp);
-        }  
-        
-    }   
-=======
             temp.count=1;
             tableMap[text].push_back(temp);
         }
@@ -107,7 +100,6 @@ void MarkovModel::analyze(){
 
 
    
->>>>>>> e2ce5aed013d30fde7318030cc83383768357df8
     
 }
 
