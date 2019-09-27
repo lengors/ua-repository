@@ -21,8 +21,9 @@ int main (int argc, char *argv[])
     // converts string to integer
     int alpha = std::stoi(argv[2]);
 
-    // sets filename
-    std::string filename = argc == 3 ? "test.txt" : argv[3];
+    // sets filenames
+    std::string input_filename = argc <= 3 ? "test.txt" : argv[3];
+    std::string output_filename = argc <= 4 ? "model.mdl" : argv[4];
 
     // Creates markov model
     MarkovModel model(k, alpha);
@@ -31,7 +32,7 @@ int main (int argc, char *argv[])
     // Close operation happens automatically at the end of the scope 
     {
         // Creates file stream from filename
-        std::ifstream ifstream(filename);
+        std::ifstream ifstream(input_filename);
 
         // If file doesn't exist display error and exit
         if (!ifstream)
@@ -65,7 +66,7 @@ int main (int argc, char *argv[])
 
     // TODO: remove this, just for testing
     {
-        std::ofstream ofstream("output.txt", std::ios::binary);
+        std::ofstream ofstream(output_filename, std::ios::binary);
 
         if (!ofstream)
         {
