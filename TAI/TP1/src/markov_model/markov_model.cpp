@@ -1,5 +1,5 @@
 // this file contains the implementation of the MarkovModel class
-#include "markov_model.hpp"
+#include <markov_model/markov_model.hpp>
 
 #include <functional>
 #include <algorithm>
@@ -8,24 +8,17 @@
 #include <random>
 #include <chrono>
 
-// using namespace std; <- not recommended, may create ambiguity
-
-// this and the "write" function are used to write bytes to stream
+// this and the "write" functions are used to write bytes to a stream
 inline std::ostream &operator<< (std::ostream &stream, const std::function<std::ostream &(std::ostream &)> &function)
 {
     return function(stream);
 }
 
+// this and the "read" functions are used to read bytes from a stream
 template<typename T>
 inline T operator>> (std::istream &stream, const std::function<T (std::istream &)> &function)
 {
     return function(stream);
-}
-
-template<typename T>
-inline auto operator>> (const T &value, std::unordered_set<T> &set)
-{
-    return set.emplace(value);
 }
 
 inline std::function<std::ostream &(std::ostream &)> write (const std::string &value)
@@ -50,32 +43,25 @@ inline std::function<std::istream &(std::istream &)> read (T &value)
     return [&value](std::istream &stream) -> std::istream & { return stream.read(reinterpret_cast<char *>(&value), sizeof(T)); };
 }
 
-template<typename T>
-inline std::function<T(std::istream &)> read ()
-{
-    return [](std::istream &stream) -> T
-    {
-        T value;
-        stream.read(reinterpret_cast<char *>(&value), sizeof(T));
-        return value;
-    };
-}
-
-MarkovModel::Event::Event(const char &character, const unsigned &count) :
+// event constructor
+MarkovModel::Event::Event (const char &character, const unsigned &count) :
     character(character), count(count)
 {
 }
 
-MarkovModel::Event::Event(const char &character) :
+// event constructor
+MarkovModel::Event::Event (const char &character) :
     Event(character, 0)
 {
 }
 
-unsigned MarkovModel::Event::operator+(const MarkovModel::Event &other) const
+// "sum" two events
+unsigned MarkovModel::Event::operator+ (const MarkovModel::Event &other) const
 {
     return count + other.count;
 }
 
+// increase event count
 MarkovModel::Event &MarkovModel::Event::operator++ (void)
 {
     ++count;
@@ -99,7 +85,7 @@ MarkovModel::~MarkovModel (void)
 {
 }
 
-// reads file and builds model
+// reads file and builds model/loads model
 MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
 {
     // resets alphabet
@@ -119,6 +105,7 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
 
     if (model.k != 0)
     {
+        // reads model
         // creates string
         std::string content;
 
@@ -133,17 +120,14 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
 
         // creates alphabet
         for (const auto &letter : content)
-            model.alphabet.emplace(letter);
+            if (model.alphabet.find(letter) == model.alphabet.end())
+                model.alphabet.emplace(letter, float(std::count(content.begin(), content.end(), letter)) / float(content.size()));
 
         for (int i = 0; i < content.length() - model.k; ++i)
         {
             // bool exist = false; <- not needed in current implementation
             char event_character = content[i + model.k];
             std::string text = content.substr(i, model.k);
-
-            // this is the same as text = content.substr(i, model.k);
-            /*for (int j = 0; j < model.k; j++)
-                text += content[i + j];*/
 
             // tries to find key
             MarkovModel::Frequency::iterator &iterator = model.frequency.find(text);
@@ -154,7 +138,7 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
                 auto pair = model.frequency.emplace(text, MarkovModel::Events());
                 iterator = pair.first;
                 for (const auto &letter : model.alphabet)
-                    iterator->second.emplace_back(letter);
+                    iterator->second.emplace_back(letter.first);
             }
 
             // reference to events of given sequence
@@ -175,30 +159,21 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
             }
             else
                 finding->operator++();
-
-            /*for (auto &other_event : model.frequency[text])
-                if (other_event.character == event_character)
-                {
-                    other_event.count++;
-                    exist = true;
-                    break;
-                }
-
-            MarkovModel::Event event;
-            if (!exist)
-            {
-                event.count = 1;
-                model.frequency[text].push_back(event);
-            } -> same as the previous lines but with enhanced use of the standard library*/
         }
     }
     else
     {
+        // loads model from file
         std::size_t reserve_size;
         istream >> read(model.k) >> read(model.alpha) >> read(reserve_size);
         model.alphabet.reserve(reserve_size);
         while (reserve_size--)
-            istream >> read<char>() >> model.alphabet;
+        {
+            float prob;
+            char letter;
+            istream >> read(letter) >> read(prob);
+            model.alphabet.emplace(letter, prob);
+        }
         while (istream.tellg() != eof)
         {
             std::string sequence;
@@ -222,6 +197,8 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
 
 std::ostream &operator<< (std::ostream &ostream, const MarkovModel &model)
 {   
+    // checks if stream is the standard output,
+    // and if so writes as string else writes in binary
     if (&ostream == &std::cout)
     {
         ostream << " Text total appearances " << std::endl;
@@ -242,7 +219,7 @@ std::ostream &operator<< (std::ostream &ostream, const MarkovModel &model)
     {
         ostream << write(model.k) << write(model.alpha) << write(model.alphabet.size());
         for (const auto &letter : model.alphabet)
-            ostream << write(letter);
+            ostream << write(letter.first) << write(letter.second);
         for (const auto &context : model.frequency)
         {
             ostream << write(context.first) << write(context.second.size());
@@ -253,59 +230,14 @@ std::ostream &operator<< (std::ostream &ostream, const MarkovModel &model)
     return ostream;
 }
 
-/*void MarkovModel::analyze (void)
-{
-    std::cout << " Text total appearances " << std::endl;
-    for (auto it = tableMap.begin(); it != tableMap.end(); ++it)
-    {
-        std::cout << it->first << "-";
-        for (auto &symbol : tableMap[it->first])
-        {
-            std::cout << "[" << symbol.c << "," << symbol.count << "]"
-                      << ", ";
-        }
-        std::cout << ";\n";
-    }
-    std::cout << " Conditional Probability " << std::endl;
-
-    for (auto it = tableMap.begin(); it != tableMap.end(); ++it)
-    {
-        for (auto &obj : tableMap[it->first])
-        {
-            int count = 0;
-            for (auto &obj2 : tableMap[it->first])
-                count += obj2.count;
-            std::cout << it->first << " followed by " << obj.c << ":" << ((float)obj.count + alpha) / ((alpha * frequency.size()) + count) << std::endl;
-        }
-    }
-}*/
-
-/*void MarkovModel::writeToFile(std::string filename)
-{
-    std::ofstream tempfile;
-    tempfile.open("output.txt");
-    tempfile << "k = " << k << "\n";
-    tempfile << "alpha = " << alpha << "\n";
-    tempfile << "\n";
-    for (auto &it : frequency)
-    {
-        tempfile << it.first << " - " << it.second << "\n";
-    }
-    tempfile << "\n";
-
-    // for (auto& str : data){
-    //     tempfile << str.text << " - " << str.c << " - " << str.count << "\n";
-    // }
-}*/
-
 unsigned MarkovModel::get_total (const MarkovModel::Frequency &frequency)
 {
-    return std::accumulate(frequency.begin(), frequency.end(), 0u, [](unsigned &accumulate, const Context &context) { return accumulate + get_total(context); });
+    return std::accumulate(frequency.begin(), frequency.end(), 0u, [](auto &accumulate, auto &context) { return accumulate + get_total(context); });
 }
 
 unsigned MarkovModel::get_total (const MarkovModel::Context &context)
 {
-    return std::accumulate(context.second.begin(), context.second.end(), 0u, [](unsigned &accumulate, const Event &event) { return accumulate + event.get_count(); });
+    return std::accumulate(context.second.begin(), context.second.end(), 0u, [](auto &accumulate, auto &event) { return accumulate + event.get_count(); });
 }
 
 std::string MarkovModel::generate_text (const unsigned &size) const
@@ -317,7 +249,7 @@ std::string MarkovModel::generate_text (const unsigned &size) const
 
     // Get current time
     auto time = std::chrono::high_resolution_clock::now();
-    unsigned duration = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
+    unsigned duration = unsigned(std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count());
 
     // Setup for random generator
     std::default_random_engine generator;
@@ -332,7 +264,7 @@ std::string MarkovModel::generate_text (const unsigned &size) const
     
     // prepares vector of contexts to choose a random context
     // this is done by ordering the vector in descending order
-    std::sort(keys.begin(), keys.end(), [](auto key0, auto key1) { return key0.second > key1.second; });
+    std::sort(keys.begin(), keys.end(), [](auto &key0, auto &key1) { return key0.second > key1.second; });
 
     // Get random number
     random = real_distribution(generator);
@@ -348,8 +280,16 @@ std::string MarkovModel::generate_text (const unsigned &size) const
     if (text.size() < size)
     {
         // Setup for alphabet and random generator for alphabet
-        std::vector<char> alphabet(this->alphabet.begin(), this->alphabet.end());
-        std::uniform_int_distribution<int> int_distribution(0, alphabet.size() - 1);
+        std::vector<std::pair<char, float>> alphabet_probabilities(alphabet.size());
+        std::transform(alphabet.begin(), alphabet.end(), alphabet_probabilities.begin(), [](auto &letter) { return letter; });
+
+        // prepares vector of letter to choose a random context
+        // this is done by ordering the vector in descending order
+        std::sort(keys.begin(), keys.end(), [](auto &letter0, auto &letter1) { return letter0.second > letter1.second; });
+
+        for (auto letter : alphabet_probabilities)
+            std::cout << letter.first << ": " << letter.second << std::endl;
+
         do
         {   
             // Tries to get list of events based on current context
@@ -358,7 +298,18 @@ std::string MarkovModel::generate_text (const unsigned &size) const
             // If current context isn't mapped
             // add random character
             if (iterator == frequency.end())
-                text += alphabet[int_distribution(generator)];
+            {
+                // Get random number
+                random = real_distribution(generator);
+
+                // Get the appropriate character based on the random number
+                std::vector<std::pair<char, float>>::reverse_iterator events_riterator = alphabet_probabilities.rbegin();
+                for (; random > events_riterator->second; ++events_riterator)
+                    random -= events_riterator->second;
+
+                // Adds that character to the text
+                text += events_riterator->first;
+            }
             else
             {
                 // Get context
@@ -391,12 +342,14 @@ std::string MarkovModel::generate_text (const unsigned &size) const
     return text;
 }
 
-float MarkovModel::get_probability(const MarkovModel::Context &context, const MarkovModel::Event &event) const
+// calculates probabily of "event" knowing "context"
+float MarkovModel::get_probability (const MarkovModel::Context &context, const MarkovModel::Event &event) const
 {
     return float(event.get_count() + alpha) / float(get_total(context) + alpha * alphabet.size());
 }
 
-float MarkovModel::get_entropy() const
+// calculates entropy
+float MarkovModel::get_entropy () const
 {
     float entropy = 0;
     unsigned total = get_total(frequency);
@@ -407,9 +360,9 @@ float MarkovModel::get_entropy() const
         for (const Event &event : context.second)
         {
             float event_prob = float(event.get_count() + alpha) / float(context_total + alpha * alphabet.size());
-            prob += event_prob * std::log(event_prob);
+            prob += event_prob * std::log(event_prob); // P(e|c) * log(P(e|c))
         }
-        entropy += prob * float(context_total) / float(total);
+        entropy += prob * float(context_total) / float(total); // ^ * P(c)
     }
     return -entropy;
 }

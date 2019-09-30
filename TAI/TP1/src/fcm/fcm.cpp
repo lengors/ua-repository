@@ -4,7 +4,7 @@
 #include <string>
 
 // includes MarkovModel class
-#include "markov_model.hpp"
+#include <markov_model/markov_model.hpp>
 
 int main (int argc, char *argv[])
 {

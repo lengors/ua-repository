@@ -1,7 +1,10 @@
+
+// STL includes
 #include <iostream>
 #include <fstream>
 
-#include "markov_model.hpp"
+// includes MarkovModel class
+#include <markov_model/markov_model.hpp>
 
 int main (int argc, char *argv[])
 {

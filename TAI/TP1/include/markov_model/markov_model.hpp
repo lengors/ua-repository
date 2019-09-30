@@ -3,16 +3,9 @@
 #pragma once
 
 #include <unordered_map>
-#include <unordered_set>
 #include <fstream>
 #include <string>
 #include <vector>
-
-/*struct CharData
-{
-    char c;
-    int count;
-};*/
 
 // this class represents a markov model
 // an "unsigned" variable is equivelant to an "unsinged int"
@@ -39,20 +32,16 @@ private:
     };
 
     typedef std::vector<Event> Events;
-    typedef std::unordered_set<char> Alphabet;
     typedef std::pair<std::string, Events> Context;
+    typedef std::unordered_map<char, float> Alphabet;
     typedef std::unordered_map<std::string, Events> Frequency;
 
     unsigned k, alpha;
     Alphabet alphabet;
     Frequency frequency;
-    
-    // std::string content; -> since the analysis is now done in the operator>>
-    // there is no need to store the entire file in a string
-    // std::map<std::string, std::list<CharData>> tableMap; -> frequency is the current equivelant (it really is the same)
 
-    static unsigned get_total (const Frequency &);
-    static unsigned get_total (const Context &);
+    static unsigned get_total (const Frequency &); // gets total occurences of each event
+    static unsigned get_total (const Context &); // gets occurrences of event for given context
 
 public:
     // constructors
@@ -86,6 +75,4 @@ public:
     // is marked as a constant variable
     inline Frequency::const_iterator begin (void) const { return frequency.begin(); }
     inline Frequency::const_iterator end (void) const { return frequency.end(); }
-    inline const Alphabet &get_alphabet (void) const { return alphabet; }
-    inline const unsigned &get_alpha (void) const { return alpha; }
 };
