@@ -41,3 +41,6 @@
 # Binary and intermidiate folders
 bin/
 int/
+
+*.mdl
+*.txt
