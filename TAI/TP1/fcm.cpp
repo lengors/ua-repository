@@ -45,24 +45,10 @@ int main (int argc, char *argv[])
         ifstream >> model;
     }
 
-    std::cout << " Text total appearances " << std::endl;
-    for (const auto &context : model)
-    {
-        std::cout << context.first << "-";
-        for (auto &event : context.second)
-            std::cout << "[" << event.get_character() << "," << event.get_count() << "]" << ", ";
-        std::cout << ";\n";
-    }
-    std::cout << " Conditional Probability " << std::endl;
-
-    for (const auto &context : model)
-        for (auto &event : context.second)
-            std::cout << context.first << " followed by " << event.get_character() << ":" << model.get_probability(context, event) << std::endl;
+    // std::cout << model << std::endl;
 
     // model.analyze(); -> code moved to operator>>
     // model.writeToFile("output.txt"); -> code moved to operator<<
-
-    std::cout << model.get_entropy() << std::endl;
 
     // TODO: remove this, just for testing
     {

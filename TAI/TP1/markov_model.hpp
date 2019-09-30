@@ -38,9 +38,10 @@ private:
         inline const unsigned &get_count (void) const { return count; }
     };
 
+    typedef std::vector<Event> Events;
     typedef std::unordered_set<char> Alphabet;
-    typedef std::pair<std::string, std::vector<Event>> Context;
-    typedef std::unordered_map<std::string, std::vector<Event>> Frequency;
+    typedef std::pair<std::string, Events> Context;
+    typedef std::unordered_map<std::string, Events> Frequency;
 
     unsigned k, alpha;
     Alphabet alphabet;
@@ -49,6 +50,9 @@ private:
     // std::string content; -> since the analysis is now done in the operator>>
     // there is no need to store the entire file in a string
     // std::map<std::string, std::list<CharData>> tableMap; -> frequency is the current equivelant (it really is the same)
+
+    static unsigned get_total (const Frequency &);
+    static unsigned get_total (const Context &);
 
 public:
     // constructors
@@ -70,9 +74,11 @@ public:
 
     // void analyze (void); -> code moved to operator>>
     // void writeToFile (std::string filename); -> code operator<<
-    
+
+    std::string generate_text (const unsigned &) const;
+
     float get_probability (const Context &, const Event &) const;
-    float get_entropy (void);
+    float get_entropy (void) const;
 
     // Writting a "begin" and "end" function allows the use of a "for each"
     // loop over an instance of this class. Making this functions return
