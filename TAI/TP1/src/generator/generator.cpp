@@ -10,8 +10,17 @@ int main (int argc, char *argv[])
 {
     MarkovModel model;
 
+    if (argc < 2)
+    {
+        std::cerr << "Error: Invalid number of arguments!" << std::endl;
+        return 1;
+    }
+
+    // gets size from arguments
+    int size = std::stoi(argv[1]);
+
     // sets filenames
-    std::string input_filename = argc <= 1 ? "model.mdl" : argv[1];
+    std::string input_filename = argc <= 2 ? "model.mdl" : argv[2];
 
     {
         std::ifstream ifstream(input_filename, std::ios::binary);
@@ -28,7 +37,7 @@ int main (int argc, char *argv[])
     // std::cout << model << std::endl;
     std::cout << "Generating text from model..." << std::endl << std::endl;
 
-    std::cout << model.generate_text(440) << std::endl;
+    std::cout << model.generate_text(size) << std::endl;
 
     return 0;
 }

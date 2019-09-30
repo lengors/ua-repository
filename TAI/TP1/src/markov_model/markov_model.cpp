@@ -287,9 +287,6 @@ std::string MarkovModel::generate_text (const unsigned &size) const
         // this is done by ordering the vector in descending order
         std::sort(keys.begin(), keys.end(), [](auto &letter0, auto &letter1) { return letter0.second > letter1.second; });
 
-        for (auto letter : alphabet_probabilities)
-            std::cout << letter.first << ": " << letter.second << std::endl;
-
         do
         {   
             // Tries to get list of events based on current context
