@@ -1,6 +1,6 @@
 class CorpusReader:
     def __init__(self, file):
-        self.documents = dict()
+        self.documents, read = dict(), False
         for line in file:
             parts = None
             if len(line.strip()) == 0:
