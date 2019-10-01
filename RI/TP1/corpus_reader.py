@@ -16,6 +16,4 @@ class CorpusReader:
                     read = True
             if read:
                 sentence = line if parts is None else '-'.join(parts[1:])
-                # for word in sentence.strip().split(' '):
-                #    self.documents[pmid].append(word.strip())
                 self.documents[pmid] += sentence
