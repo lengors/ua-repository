@@ -18,14 +18,14 @@ if len(sys.argv) > 1:
             stemmer = Stemmer('english')
             corpus_reader = CorpusReader(file)
             stopwords = [ word.strip() for word in stopwords_file ]
-            print(stopwords)
+            #print(stopwords)
             for pmid, document in corpus_reader.documents.items():
-                print('ID: {}'.format(pmid))
+                #print('ID: {}'.format(pmid))
                 tokens = enumerate(simple_tokenizer.tokenize(document))
                 tokens = [ (i,stemmer.stemWord(token)) for i, token in tokens if token not in stopwords ]
                 indexer.update(pmid, tokens)
                 #print(tokens)
-                print()
+                #print()
         else:
             print('Error: Stopwords\' file doesn\'t exist!')
     else:
