@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm *.sln && rm -rf bin int config
+rm -rf bin int config && rm -f *.sln 
