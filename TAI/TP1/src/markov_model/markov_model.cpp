@@ -130,7 +130,9 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
             std::string text = content.substr(i, model.k);
 
             // tries to find key
-            MarkovModel::Frequency::iterator &iterator = model.frequency.find(text);
+            //MarkovModel::Frequency::iterator &iterator = model.frequency.find(text);
+            // The code above evokes an error, cannot bind non const lvalue reference
+            MarkovModel::Frequency::iterator iterator = model.frequency.find(text);
 
             // if map doesn't contain key, then initializes vector
             if (iterator == model.frequency.end())
