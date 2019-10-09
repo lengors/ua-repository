@@ -19,6 +19,26 @@ def write_file(filename, od):
                 file.write(" , " + str(k) + " - " + str(len(sec_dic[k])))
             file.write("\n")
 
+def one_document(od):
+    terms = []
+    for term in od:
+        if len(terms) == 10:
+            break
+        if len(od[term]) == 1:
+            terms.append(term)
+    return terms
+
+def highest_frequency(od):
+    lista = []
+    for i in range(10):
+        maior = 0
+        for term in od:
+            if len(od[term]) > maior and term not in lista:
+                maior = len(od[term])
+                termo = term
+        lista.append(termo)
+    return lista
+        
 
 
 if len(sys.argv) > 2:
@@ -34,7 +54,7 @@ if len(sys.argv) > 2:
                 corpus_reader = CorpusReader(file)
                 stopwords = [ word.strip() for word in stopwords_file ]
                 for pmid, document in corpus_reader.documents.items():
-                    tokens = enumerate(tokenizer.tokenize(document))
+                    tokens = enumerate(simple_tokenizer.tokenize(document))
                     tokens = [ (i,stemmer.stemWord(token)) for i, token in tokens if token not in stopwords ]
                     indexer.update(pmid, tokens)
                
@@ -43,7 +63,11 @@ if len(sys.argv) > 2:
     else:
         print('Error: File doesn\'t exist!')
     od = collections.OrderedDict(sorted(indexer.terms.items()))
-    
+    one_doc = one_document(od)
+    highest = highest_frequency(od)
+    print(one_doc)
+    print("----")
+    print(highest_frequency(od))
     write_file(output, od)
     
 else:
