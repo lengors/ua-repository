@@ -64,7 +64,6 @@ if len(sys.argv) > 2:
         print('Error: File doesn\'t exist!')
     od = collections.OrderedDict(sorted(indexer.terms.items()))
     one_doc = one_document(od)
-    highest = highest_frequency(od)
     print(one_doc)
     print("----")
     print(highest_frequency(od))
