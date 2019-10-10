@@ -118,6 +118,9 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
         // reads file into string from cursor position
         istream.read((char *) content.data(), content.size());
 
+        // remove all null characters
+        content.erase(std::remove(content.begin(), content.end(), '\0'), content.end());
+
         // creates alphabet
         for (const auto &letter : content)
             if (model.alphabet.find(letter) == model.alphabet.end())
@@ -242,12 +245,12 @@ unsigned MarkovModel::get_total (const MarkovModel::Context &context)
     return std::accumulate(context.second.begin(), context.second.end(), 0u, [](auto &accumulate, auto &event) { return accumulate + event.get_count(); });
 }
 
-std::string MarkovModel::generate_text (const unsigned &size) const
+std::string MarkovModel::generate_text (const unsigned &max_size, const std::string &initial_text) const
 {
     float random;
 
     // Result
-    std::string text;
+    std::string text = initial_text;
 
     // Get current time
     auto time = std::chrono::high_resolution_clock::now();
@@ -258,36 +261,43 @@ std::string MarkovModel::generate_text (const unsigned &size) const
     std::uniform_real_distribution<float> real_distribution(0, 1);
     generator.seed(duration);
 
-    // This three lines create a vector with all existing contexts
-    // and their respective probability
-    unsigned total = get_total(frequency);
-    std::vector<std::pair<std::string, float>> keys(frequency.size());
-    std::transform(frequency.begin(), frequency.end(), keys.begin(), [&total](auto pair) { return std::pair(pair.first, float(get_total(pair)) / float(total)); });
-    
-    // prepares vector of contexts to choose a random context
-    // this is done by ordering the vector in descending order
-    std::sort(keys.begin(), keys.end(), [](auto &key0, auto &key1) { return key0.second > key1.second; });
-
-    // Get random number
-    random = real_distribution(generator);
-
-    // Gets the appropiate key based on the random number
-    std::vector<std::pair<std::string, float>>::reverse_iterator keys_riterator = keys.rbegin();
-    for (; random > keys_riterator->second; ++keys_riterator)
-        random -= keys_riterator->second;
-
-    // initializes text based on random context
-    text += keys_riterator->first.substr(0, size);
-
-    if (text.size() < size)
+    if (text.size() == 0)
     {
-        // Setup for alphabet and random generator for alphabet
+        // This three lines create a vector with all existing contexts
+        // and their respective probability
+        unsigned total = get_total(frequency);
+        std::vector<std::pair<std::string, float>> keys(frequency.size());
+        std::transform(frequency.begin(), frequency.end(), keys.begin(), [&total](auto pair) { return std::pair(pair.first, float(get_total(pair)) / float(total)); });
+
+        // prepares vector of contexts to choose a random context
+        // this is done by ordering the vector in descending order
+        std::sort(keys.begin(), keys.end(), [](auto &key0, auto &key1) { return key0.second > key1.second; });
+
+        // Get random number
+        random = real_distribution(generator);
+
+        // Gets the appropiate key based on the random number
+        std::vector<std::pair<std::string, float>>::reverse_iterator keys_riterator = keys.rbegin();
+        for (; random > keys_riterator->second; ++keys_riterator)
+            random -= keys_riterator->second;
+
+        // initializes text based on random context
+        text += keys_riterator->first;
+    
+        if (max_size != 0)
+            text = text.substr(0, max_size);
+    }
+
+
+    if (max_size == 0 || text.size() < max_size)
+    {
+        /*// Setup for alphabet and random generator for alphabet
         std::vector<std::pair<char, float>> alphabet_probabilities(alphabet.size());
         std::transform(alphabet.begin(), alphabet.end(), alphabet_probabilities.begin(), [](auto &letter) { return letter; });
 
         // prepares vector of letter to choose a random context
         // this is done by ordering the vector in descending order
-        std::sort(keys.begin(), keys.end(), [](auto &letter0, auto &letter1) { return letter0.second > letter1.second; });
+        std::sort(alphabet_probabilities.begin(), alphabet_probabilities.end(), [](auto &letter0, auto &letter1) { return letter0.second > letter1.second; });*/
 
         do
         {   
@@ -312,7 +322,10 @@ std::string MarkovModel::generate_text (const unsigned &size) const
                         if (it->first.substr(0, rk) == lookup)
                             contexts.emplace_back(it->first, it->second);
                 }
-                while (!contexts.size());
+                while (rk > 1 && contexts.size() == 0);
+
+                if (contexts.size() == 0)
+                    return text;
 
                 // Generates vector of contexts and respective totals
                 std::vector<std::pair<Context, unsigned>> contexts_totals(contexts.size());
@@ -346,6 +359,9 @@ std::string MarkovModel::generate_text (const unsigned &size) const
             {
                 // Get context
                 const Context context(iterator->first, iterator->second);
+
+                if (get_total(context) == 0)
+                    return text;
                 
                 // Creates vector with all events for given context
                 std::vector<std::pair<char, float>> events(iterator->second.size());
@@ -368,7 +384,10 @@ std::string MarkovModel::generate_text (const unsigned &size) const
                 text += events_riterator->first;
             }
         }
-        while (text.size() < size);
+        while (max_size == 0 || text.size() < max_size);
+
+        // ensures any additional character is removed
+        text = text.substr(0, max_size);
     }
 
     return text;

@@ -64,7 +64,8 @@ public:
     // void analyze (void); -> code moved to operator>>
     // void writeToFile (std::string filename); -> code operator<<
 
-    std::string generate_text (const unsigned &) const;
+    // Generates text based on the model
+    std::string generate_text (const unsigned &, const std::string &) const;
 
     float get_probability (const Context &, const Event &) const;
     float get_entropy (void) const;

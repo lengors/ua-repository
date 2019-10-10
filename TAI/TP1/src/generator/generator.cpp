@@ -10,17 +10,28 @@ int main (int argc, char *argv[])
 {
     MarkovModel model;
 
-    if (argc < 2)
+    int index = 1;
+    unsigned max_size = 0;
+    std::string initial_text, input_filename;
+
+    while (index < argc)
     {
-        std::cerr << "Error: Invalid number of arguments!" << std::endl;
-        return 1;
+        std::string current = argv[index++];
+        if (current.substr(0, 2) == "-s" && max_size == 0)
+            max_size = std::stoi(current.size() == 2 ? argv[index++] : current.substr(2));
+        else if (current.substr(0, 2) == "-t" && initial_text.size() == 0)
+            initial_text = current.size() == 2 ? argv[index++] : current.substr(2);
+        else if (input_filename.size() == 0)
+            input_filename = current;
+        else
+        {
+            std::cerr << "Usage: " << argv[0] << " [-s max_size] [-t initial_text] [model_filename]" << std::endl;
+            return 1;
+        } 
     }
 
-    // gets size from arguments
-    int size = std::stoi(argv[1]);
-
-    // sets filenames
-    std::string input_filename = argc <= 2 ? "model.mdl" : argv[2];
+    if (input_filename.size() == 0)
+        input_filename = "model.mdl";
 
     {
         std::ifstream ifstream(input_filename, std::ios::binary);
@@ -37,7 +48,9 @@ int main (int argc, char *argv[])
     // std::cout << model << std::endl;
     std::cout << "Generating text from model..." << std::endl << std::endl;
 
-    std::cout << model.generate_text(size) << std::endl;
+    std::string text_generated = model.generate_text(max_size, initial_text);
+    std::cout << text_generated  << std::endl;
+    std::cout << "SIZE: " << text_generated.size() << std::endl;
 
     return 0;
 }
