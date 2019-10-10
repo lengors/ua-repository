@@ -12,12 +12,7 @@ def load(filename):
 
 def write_file(filename, od):
     with open(filename, 'w') as file:
-        for key in od:
-            file.write(key)
-            sec_dic = od[key]
-            for k in sec_dic:
-                file.write(" , " + str(k) + " - " + str(len(sec_dic[k])))
-            file.write("\n")
+        file.write(''.join([ '{}{}\n'.format(key, ''.join([ ' , {} - {}'.format(k, len(v)) for k, v in sec_dic.items() ])) for key, sec_dic in od.items() ]))
 
 def one_document(od):
     terms = []
@@ -38,8 +33,6 @@ def highest_frequency(od):
                 termo = term
         lista.append(termo)
     return lista
-        
-
 
 if len(sys.argv) > 2:
     directory = sys.argv[1]
@@ -49,10 +42,10 @@ if len(sys.argv) > 2:
         stopwords_file = load('stopwords.txt')
         if stopwords_file is not None:
             stemmer = Stemmer('english')
+            stopwords = [ word.strip() for word in stopwords_file ]
             for filename in os.listdir(directory):
                 file = open(os.path.join(directory, filename))
                 corpus_reader = CorpusReader(file)
-                stopwords = [ word.strip() for word in stopwords_file ]
                 for pmid, document in corpus_reader.documents.items():
                     tokens = enumerate(simple_tokenizer.tokenize(document))
                     tokens = [ (i,stemmer.stemWord(token)) for i, token in tokens if token not in stopwords ]

@@ -298,16 +298,49 @@ std::string MarkovModel::generate_text (const unsigned &size) const
             // add random character
             if (iterator == frequency.end())
             {
-                // Get random number
+                unsigned rk = k;
+                std::vector<Context> contexts;
+
+                // creates a vector o contexts by
+                // matching the first n characters of a context
+                // with the last n characters of the current text
+                do
+                {
+                    --rk;
+                    std::string lookup = text.substr(text.size() - rk, rk);
+                    for (Frequency::const_iterator it = frequency.begin(); it != frequency.end(); ++it)
+                        if (it->first.substr(0, rk) == lookup)
+                            contexts.emplace_back(it->first, it->second);
+                }
+                while (!contexts.size());
+
+                // Generates vector of contexts and respective totals
+                std::vector<std::pair<Context, unsigned>> contexts_totals(contexts.size());
+                std::transform(contexts.begin(), contexts.end(), contexts_totals.begin(), [](auto &context) { return std::pair(context, get_total(context)); });
+
+                // prepares vector of contexts to choose a random context
+                // this is done by ordering the vector in descending order
+                std::sort(contexts_totals.begin(), contexts_totals.end(), [](auto &context0, auto &context1) { return context0.second > context1.second; });
+
+                // Gets random number
                 random = real_distribution(generator);
 
-                // Get the appropriate character based on the random number
-                std::vector<std::pair<char, float>>::reverse_iterator events_riterator = alphabet_probabilities.rbegin();
-                for (; random > events_riterator->second; ++events_riterator)
-                    random -= events_riterator->second;
+                float probability;
 
-                // Adds that character to the text
-                text += events_riterator->first;
+                unsigned total = 0;
+                for (auto &context_total : contexts_totals)
+                    total += context_total.second;
+
+                // Used to calculate probabilities
+                float f_total = float(total);
+
+                // Get the appropriate context based on the random number
+                std::vector<std::pair<Context, unsigned>>::reverse_iterator contexts_totals_riterator = contexts_totals.rbegin();
+                for (; random > (probability = float(contexts_totals_riterator->second) / f_total); ++contexts_totals_riterator)
+                    random -= probability;
+
+                const std::string &value = contexts_totals_riterator->first.first;
+                text += value.substr(value.size() - rk, rk);
             }
             else
             {
@@ -321,7 +354,7 @@ std::string MarkovModel::generate_text (const unsigned &size) const
 
                 // prepares vector of events to choose a random event
                 // this is done by ordering the vector in descending order
-                std::sort(events.begin(), events.end(), [](auto event0, auto event1) { return event0.second > event1.second; });
+                std::sort(events.begin(), events.end(), [](auto &event0, auto &event1) { return event0.second > event1.second; });
                 
                 // Get random number
                 random = real_distribution(generator);
