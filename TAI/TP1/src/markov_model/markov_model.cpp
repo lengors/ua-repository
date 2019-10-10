@@ -1,6 +1,7 @@
 // this file contains the implementation of the MarkovModel class
 #include <markov_model/markov_model.hpp>
 
+#include <unordered_set>
 #include <functional>
 #include <algorithm>
 #include <iostream>
@@ -68,6 +69,13 @@ MarkovModel::Event &MarkovModel::Event::operator++ (void)
     return *this;
 }
 
+MarkovModel::MarkovModel (const MarkovModel &model, const std::string &text) :
+    k(model.k), alpha(model.alpha), alphabet(model.alphabet)
+{
+    // builds model from text
+    build_model(text);
+}
+
 // constructor
 MarkovModel::MarkovModel (const unsigned &k, const unsigned &alpha) :
     k(k), alpha(alpha)
@@ -83,6 +91,57 @@ MarkovModel::MarkovModel (void) :
 // destructor
 MarkovModel::~MarkovModel (void)
 {
+}
+
+// builds model from text
+void MarkovModel::build_model (std::string content)
+{
+    // remove all null characters
+    content.erase(std::remove(content.begin(), content.end(), '\0'), content.end());
+
+    // creates alphabet
+    for (const auto &letter : content)
+        if (alphabet.find(letter) == alphabet.end())
+            alphabet.emplace(letter, float(std::count(content.begin(), content.end(), letter)) / float(content.size()));
+
+    for (int i = 0; i < content.length() - k; ++i)
+    {
+        // bool exist = false; <- not needed in current implementation
+        char event_character = content[i + k];
+        std::string text = content.substr(i, k);
+
+        // tries to find key
+        // MarkovModel::Frequency::iterator &iterator = model.frequency.find(text);
+        // The code above evokes an error, cannot bind non const lvalue reference
+        MarkovModel::Frequency::iterator iterator = frequency.find(text);
+
+        // if map doesn't contain key, then initializes vector
+        if (iterator == frequency.end())
+        {
+            auto pair = frequency.emplace(text, MarkovModel::Events());
+            iterator = pair.first;
+            for (const auto &letter : alphabet)
+                iterator->second.emplace_back(letter.first);
+        }
+
+        // reference to events of given sequence
+        MarkovModel::Events &events = iterator->second;
+
+        // tries to find an event with a given character [same as the for loop]
+        MarkovModel::Events::iterator finding = std::find_if(events.begin(), events.end(),
+            [&event_character](const MarkovModel::Event &event) { return event_character == event.get_character(); }); // <- this is a lambda, recommended reading:
+                                                                                                                 // https://pt.cppreference.com/w/cpp/language/lambda
+        // if event not found
+        // if character already exists in a given context
+        // then it already exists in the alphabet
+        if (finding == events.end())
+        {
+            std::cerr << "Error: character not found!" << std::endl;
+            std::exit(1);
+        }
+        else
+            finding->operator++();
+    }
 }
 
 // reads file and builds model/loads model
@@ -118,53 +177,8 @@ MarkovModel &operator>> (std::istream &istream, MarkovModel &model)
         // reads file into string from cursor position
         istream.read((char *) content.data(), content.size());
 
-        // remove all null characters
-        content.erase(std::remove(content.begin(), content.end(), '\0'), content.end());
-
-        // creates alphabet
-        for (const auto &letter : content)
-            if (model.alphabet.find(letter) == model.alphabet.end())
-                model.alphabet.emplace(letter, float(std::count(content.begin(), content.end(), letter)) / float(content.size()));
-
-        for (int i = 0; i < content.length() - model.k; ++i)
-        {
-            // bool exist = false; <- not needed in current implementation
-            char event_character = content[i + model.k];
-            std::string text = content.substr(i, model.k);
-
-            // tries to find key
-            //MarkovModel::Frequency::iterator &iterator = model.frequency.find(text);
-            // The code above evokes an error, cannot bind non const lvalue reference
-            MarkovModel::Frequency::iterator iterator = model.frequency.find(text);
-
-            // if map doesn't contain key, then initializes vector
-            if (iterator == model.frequency.end())
-            {
-                auto pair = model.frequency.emplace(text, MarkovModel::Events());
-                iterator = pair.first;
-                for (const auto &letter : model.alphabet)
-                    iterator->second.emplace_back(letter.first);
-            }
-
-            // reference to events of given sequence
-            MarkovModel::Events &events = iterator->second;
-
-            // tries to find an event with a given character [same as the for loop]
-            MarkovModel::Events::iterator finding = std::find_if(events.begin(), events.end(),
-                [&event_character](const MarkovModel::Event &event) { return event_character == event.get_character(); }); // <- this is a lambda, recommended reading:
-                                                                                                                     // https://pt.cppreference.com/w/cpp/language/lambda
-
-            // if event not found
-            // if character already exists in a given context
-            // then it already exists in the alphabet
-            if (finding == events.end())
-            {
-                std::cerr << "Error: character not found!" << std::endl;
-                std::exit(1);
-            }
-            else
-                finding->operator++();
-        }
+        // builds model from text
+        model.build_model(content);        
     }
     else
     {
@@ -218,7 +232,7 @@ std::ostream &operator<< (std::ostream &ostream, const MarkovModel &model)
         for (const auto &context : model)
             for (auto &event : context.second)
                 ostream << context.first << " followed by " << event.get_character() << ":" << model.get_probability(context, event) << std::endl;
-        ostream << model.get_entropy();
+        ostream << "Entropy: " << model.get_entropy();
     }
     else
     {
@@ -288,27 +302,19 @@ std::string MarkovModel::generate_text (const unsigned &max_size, const std::str
             text = text.substr(0, max_size);
     }
 
-
     if (max_size == 0 || text.size() < max_size)
     {
-        /*// Setup for alphabet and random generator for alphabet
-        std::vector<std::pair<char, float>> alphabet_probabilities(alphabet.size());
-        std::transform(alphabet.begin(), alphabet.end(), alphabet_probabilities.begin(), [](auto &letter) { return letter; });
-
-        // prepares vector of letter to choose a random context
-        // this is done by ordering the vector in descending order
-        std::sort(alphabet_probabilities.begin(), alphabet_probabilities.end(), [](auto &letter0, auto &letter1) { return letter0.second > letter1.second; });*/
-
         do
         {   
             // Tries to get list of events based on current context
-            Frequency::const_iterator iterator = frequency.find(text.substr(text.size() - k, k));
+            std::size_t n = text.size() < k ? text.size() : k;
+            Frequency::const_iterator iterator = frequency.find(text.substr(text.size() - n, n));
 
             // If current context isn't mapped
             // add random character
             if (iterator == frequency.end())
             {
-                unsigned rk = k;
+                std::size_t rk = n;
                 std::vector<Context> contexts;
 
                 // creates a vector o contexts by
@@ -353,20 +359,23 @@ std::string MarkovModel::generate_text (const unsigned &max_size, const std::str
                     random -= probability;
 
                 const std::string &value = contexts_totals_riterator->first.first;
-                text += value.substr(value.size() - rk, rk);
+                text += value.substr(value.size() - rk, rk); // PROBLEM!!!!!!!!!!!!!!!!
             }
             else
             {
                 // Get context
                 const Context context(iterator->first, iterator->second);
 
-                if (get_total(context) == 0)
+                float context_total = float(get_total(context));
+                if (context_total == 0)
                     return text;
-                
+
+                float prob_denominator = float(context_total + alpha * alphabet.size());
+
                 // Creates vector with all events for given context
                 std::vector<std::pair<char, float>> events(iterator->second.size());
                 std::transform(iterator->second.begin(), iterator->second.end(), events.begin(),
-                    [&context, this](const Event &event) { return std::pair(event.get_character(), get_probability(context, event)); });
+                    [&prob_denominator, this](const Event &event) { return std::pair(event.get_character(), float(event.get_count() + alpha) / prob_denominator); });
 
                 // prepares vector of events to choose a random event
                 // this is done by ordering the vector in descending order
@@ -386,9 +395,10 @@ std::string MarkovModel::generate_text (const unsigned &max_size, const std::str
         }
         while (max_size == 0 || text.size() < max_size);
 
-        // ensures any additional character is removed
-        text = text.substr(0, max_size);
     }
+    
+    // ensures any additional character is removed
+    text = text.substr(0, max_size);
 
     return text;
 }
@@ -411,9 +421,56 @@ float MarkovModel::get_entropy () const
         for (const Event &event : context.second)
         {
             float event_prob = float(event.get_count() + alpha) / float(context_total + alpha * alphabet.size());
-            prob += event_prob * std::log(event_prob); // P(e|c) * log(P(e|c))
+            if (event_prob != 0)
+                prob += event_prob * std::log(event_prob); // P(e|c) * log(P(e|c))
         }
         entropy += prob * float(context_total) / float(total); // ^ * P(c)
     }
     return -entropy;
+}
+
+float MarkovModel::compare (const MarkovModel &model0, const MarkovModel &model1)
+{
+    // Build alphabet union
+    std::unordered_set<char> alphabet;
+    for (auto &character : model0.alphabet)
+        alphabet.emplace(character.first);
+    for (auto &character : model1.alphabet)
+        alphabet.emplace(character.first);
+
+    // Build contexts union
+    std::unordered_set<std::string> contexts;
+    for (auto &context : model0.frequency)
+        contexts.emplace(context.first);
+    for (auto &context : model1.frequency)
+        contexts.emplace(context.first);
+
+    float total = 0;
+    for (auto &context : contexts)
+    {
+        Frequency::const_iterator iterator0 = model0.frequency.find(context);
+        Frequency::const_iterator iterator1 = model1.frequency.find(context);
+        // model 0 or model1 don't contain the current context
+        if (iterator0 == model0.frequency.end() || iterator1 == model1.frequency.end())
+            ++total;
+        // both models contain the current context
+        else
+        {
+            const Context context0(iterator0->first, iterator0->second);
+            const Context context1(iterator1->first, iterator1->second);
+            float total0 = float(get_total(context0));
+            float total1 = float(get_total(context1));
+            for (auto &character : alphabet)
+            {
+                Events::const_iterator event0 = std::find_if(context0.second.begin(), context0.second.end(), [&character](auto &event) { return character == event.get_character(); });
+                Events::const_iterator event1 = std::find_if(context1.second.begin(), context1.second.end(), [&character](auto &event) { return character == event.get_character(); });
+                float prob_event0 = float(event0 == context0.second.end() ? 0 : event0->get_count()) / total0;
+                float prob_event1 = float(event1 == context1.second.end() ? 0 : event1->get_count()) / total1;
+                float diff_prob = prob_event0 - prob_event1;
+                total += diff_prob * diff_prob;
+            }
+        }
+    }
+
+    return total / contexts.size();
 }

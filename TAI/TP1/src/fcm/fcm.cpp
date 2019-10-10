@@ -78,5 +78,8 @@ int main (int argc, char *argv[])
         ofstream << model;
     }
 
+    if (print_model)
+        // std::cout << model << std::endl;
+        std::cout << model.get_entropy() << std::endl;
     return 0;
 }

@@ -45,12 +45,18 @@ int main (int argc, char *argv[])
         ifstream >> model;
     }
 
-    // std::cout << model << std::endl;
-    std::cout << "Generating text from model..." << std::endl << std::endl;
+    if (max_size < model.get_k())
+    {
+        std::cerr << "Error: specified max_size is less tha k (" << model.get_k() << ")!" << std::endl;
+        return 1;
+    }
 
-    std::string text_generated = model.generate_text(max_size, initial_text);
-    std::cout << text_generated  << std::endl;
-    std::cout << "SIZE: " << text_generated.size() << std::endl;
+    std::string generated_text = model.generate_text(max_size, initial_text);
+    std::cout << generated_text  << std::endl;
+
+    MarkovModel model1(model, generated_text);
+
+    std::cout << "Comparsion: " << MarkovModel::compare(model, model1) << std::endl;
 
     return 0;
 }

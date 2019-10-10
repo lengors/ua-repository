@@ -43,8 +43,12 @@ private:
     static unsigned get_total (const Frequency &); // gets total occurences of each event
     static unsigned get_total (const Context &); // gets occurrences of event for given context
 
+    void build_model (std::string);
 public:
     // constructors
+    // used to build a model from a pre-existing one and a text
+    MarkovModel (const MarkovModel &, const std::string &);
+
     // used to build a new model
     MarkovModel (const unsigned &k, const unsigned &alpha);
 
@@ -67,6 +71,9 @@ public:
     // Generates text based on the model
     std::string generate_text (const unsigned &, const std::string &) const;
 
+    inline const unsigned &get_alpha (void) const { return alpha; }
+    inline const unsigned &get_k (void) const { return k; }
+
     float get_probability (const Context &, const Event &) const;
     float get_entropy (void) const;
 
@@ -76,4 +83,6 @@ public:
     // is marked as a constant variable
     inline Frequency::const_iterator begin (void) const { return frequency.begin(); }
     inline Frequency::const_iterator end (void) const { return frequency.end(); }
+
+    static float compare (const MarkovModel &, const MarkovModel &);
 };
