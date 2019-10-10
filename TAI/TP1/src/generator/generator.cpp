@@ -12,7 +12,8 @@ int main (int argc, char *argv[])
 
     int index = 1;
     unsigned max_size = 0;
-    std::string initial_text, input_filename;
+    bool print_text = false;
+    std::string initial_text, input_filename, output_filename;
 
     while (index < argc)
     {
@@ -21,11 +22,15 @@ int main (int argc, char *argv[])
             max_size = std::stoi(current.size() == 2 ? argv[index++] : current.substr(2));
         else if (current.substr(0, 2) == "-t" && initial_text.size() == 0)
             initial_text = current.size() == 2 ? argv[index++] : current.substr(2);
+        else if (current.substr(0, 2) == "-o" && output_filename.size() == 0)
+            output_filename = current.size() == 2 ? argv[index++] : current.substr(2);
+        else if (current.substr(0, 2) == "-p" && !print_text)
+            print_text = true;
         else if (input_filename.size() == 0)
             input_filename = current;
         else
         {
-            std::cerr << "Usage: " << argv[0] << " [-s max_size] [-t initial_text] [model_filename]" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " [-s max_size] [-t initial_text] [-o output_model_filename] [-p] [input_model_filename]" << std::endl;
             return 1;
         } 
     }
@@ -45,18 +50,34 @@ int main (int argc, char *argv[])
         ifstream >> model;
     }
 
-    if (max_size < model.get_k())
+    if (max_size != 0 && max_size < model.get_k())
     {
         std::cerr << "Error: specified max_size is less tha k (" << model.get_k() << ")!" << std::endl;
         return 1;
     }
 
     std::string generated_text = model.generate_text(max_size, initial_text);
-    std::cout << generated_text  << std::endl;
+    
+    if (print_text)
+        std::cout << generated_text  << std::endl;
 
-    MarkovModel model1(model, generated_text);
+    if (output_filename.size() != 0)
+    {
+        MarkovModel g_model(model, generated_text);
 
-    std::cout << "Comparsion: " << MarkovModel::compare(model, model1) << std::endl;
+        {
+            std::ofstream ofstream(output_filename, std::ios::binary);
+
+            if (!ofstream)
+            {
+                std::cerr << "Error: Save model failed!" << std::endl;
+                return 1;
+            }
+
+            ofstream << g_model;
+        }
+    }
+
 
     return 0;
 }

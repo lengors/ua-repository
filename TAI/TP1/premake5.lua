@@ -162,3 +162,45 @@ project "generator"
     filter "configurations:release"
         runtime "Release"
         optimize "on"
+
+project "comparator"
+    location "config/%{prj.name}"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
+    
+    targetdir ("bin/" .. folder .. "/%{prj.name}")
+    objdir ("int/" .. folder .. "/%{prj.name}")
+    
+    files
+    {
+        "src/%{prj.name}/**.cpp"
+    }
+    
+    includedirs
+    {
+        "include"
+    }
+    
+    links
+    {
+        "markov_model"
+    }
+    
+    filter "system:windows"
+        systemversion "latest"
+    
+    filter "system:linux"
+        systemversion "latest"
+    
+    filter "system:macosx"
+        systemversion "latest"
+    
+    filter "configurations:debug"
+        runtime "Debug"
+        symbols "on"
+    
+    filter "configurations:release"
+        runtime "Release"
+        optimize "on"
