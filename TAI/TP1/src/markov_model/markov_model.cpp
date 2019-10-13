@@ -320,6 +320,9 @@ std::string MarkovModel::generate_text (const unsigned &max_size, const std::str
                 // creates a vector o contexts by
                 // matching the first n characters of a context
                 // with the last n characters of the current text
+                if (rk <= 1)
+                    return text;
+
                 do
                 {
                     --rk;
@@ -359,7 +362,7 @@ std::string MarkovModel::generate_text (const unsigned &max_size, const std::str
                     random -= probability;
 
                 const std::string &value = contexts_totals_riterator->first.first;
-                text += value.substr(value.size() - rk, rk); // PROBLEM!!!!!!!!!!!!!!!!
+                text += value.substr(value.size() - rk, rk);
             }
             else
             {
@@ -373,8 +376,8 @@ std::string MarkovModel::generate_text (const unsigned &max_size, const std::str
                 float prob_denominator = float(context_total + alpha * alphabet.size());
 
                 // Creates vector with all events for given context
-                std::vector<std::pair<char, float>> events(iterator->second.size());
-                std::transform(iterator->second.begin(), iterator->second.end(), events.begin(),
+                std::vector<std::pair<char, float>> events(context.second.size());
+                std::transform(context.second.begin(), context.second.end(), events.begin(),
                     [&prob_denominator, this](const Event &event) { return std::pair(event.get_character(), float(event.get_count() + alpha) / prob_denominator); });
 
                 // prepares vector of events to choose a random event
@@ -422,7 +425,7 @@ float MarkovModel::get_entropy () const
         {
             float event_prob = float(event.get_count() + alpha) / float(context_total + alpha * alphabet.size());
             if (event_prob != 0)
-                prob += event_prob * std::log(event_prob); // P(e|c) * log(P(e|c))
+                prob += event_prob * std::log2(event_prob); // P(e|c) * log(P(e|c))
         }
         entropy += prob * float(context_total) / float(total); // ^ * P(c)
     }
