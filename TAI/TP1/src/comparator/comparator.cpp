@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
         ifstream >> model1;
     }
 
-    std::cout << MarkovModel::compare(model0, model1);
+    std::cout << MarkovModel::compare(model0, model1) << std::endl;
 
     return 0;
 }
