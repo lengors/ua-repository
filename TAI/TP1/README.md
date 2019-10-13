@@ -35,3 +35,29 @@ COMPARATOR:
 
 ## RESET ##
 ./reset[.sh]
+
+## How to run a concrete example ##
+1. First thing, execute 
+
+	./build.sh
+
+This will build FCM, Generator and Comparator.
+
+2. Run FCM, 
+
+	./run.sh fcm 2 1 t1.txt model_t1.mdl -p
+
+This will create a model called model_t1 holding necessary information for the Generator. 
+This model was created with k = 2 and alpha = 1. "-p" tells the program print out the entropy of the model, in this case is 5.02675.
+
+3. Run Generator, 
+
+./run.sh generator -s 100 -t \"I hope we get a good grade.\" -o new_model_t1.mdl -p model_t1.mdl 
+
+The generator will create an output of 100 characters considering the initial text given.
+
+4. Finally, execute 
+
+	./run.sh comparator model_t1.mdl new_model_t1.mdl 
+
+This program will similarity value of the 2 files. 0 meaning both of them are identical, 1 meaning that both 100% different. 
