@@ -60,4 +60,4 @@ The generator will create an output of 100 characters considering the initial te
 
 	./run.sh comparator model_t1.mdl new_model_t1.mdl 
 
-This program will similarity value of the 2 files. 0 meaning both of them are identical, 1 meaning that both 100% different. 
+This program will a value which represents the similarity of the 2 files. The closer to 0 the value is, shows how similar both files are.
