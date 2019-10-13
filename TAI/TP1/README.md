@@ -18,5 +18,8 @@ FCM:
 GENERATOR:
 ./run[.sh] generator [-s max_size] [-t initial_text] [-o output_model_filename] [-p] [input_model_filename='model.mdl']
 
+COMPARATOR:
+./run[.sh] comparator first_model_filename second_model_filename
+
 ## RESET ##
 ./reset[.sh]
