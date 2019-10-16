@@ -4,6 +4,13 @@ from indexer import Indexer
 import argparse, rules
 import os, time
 
+
+'''
+    Trabalho realizado por : 
+        - Lucas Barros, nmec : 83895;
+        - Pedro Cavadas, nmec : 85090;
+'''
+
 def one_document(od):
     return [ term for term, docs in od.items() if len(docs) == 1 ][:10]
 
