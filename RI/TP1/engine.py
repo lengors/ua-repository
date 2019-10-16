@@ -1,15 +1,11 @@
-from tokenization import tokenizer, simple_tokenizer
+from tokenization import tokenizer, simple_tokenizer, Tokenizer
 from corpus_reader import CorpusReader
 from indexer import Indexer
-import collections, rules
-import sys, os, time
-
-def write_file(filename, od):
-    with open(filename, 'w') as file:
-        file.write(''.join([ '{}{}\n'.format(key, ''.join([ ' , {} - {}'.format(k, len(v)) for k, v in sec_dic.items() ])) for key, sec_dic in od.items() ]))
+import argparse, rules
+import os, time
 
 def one_document(od):
-    return list(od.keys())[:10]
+    return [ term for term, docs in sorted(od.items()) if len(docs) == 1 ][:10]
 
 def highest_frequency(od):
     return [ term for term, _ in sorted(od.items(), key = lambda x: len(x[1]), reverse = True)[:10] ]
@@ -21,38 +17,43 @@ def get_filenames(inputname):
         return [ os.path.join(inputname, filename) for filename in os.listdir(inputname) if os.path.isfile(os.path.join(inputname, filename)) ]
     return [ ]
 
-if __name__ == '__main__':
-    #temp
+def timeit(function, *args, **kwargs):
     start = time.time()
-    if len(sys.argv) > 3:
-        stopwords_filename = 'stopwords.txt'
-        inputname, output = sys.argv[1], sys.argv[2]
-        token = sys.argv[3]
-        filenames = get_filenames(inputname)
-        if len(filenames) != 0 and os.path.isfile(stopwords_filename):
-            start_t = time.time()
-            indexer = Indexer()
-            used_tokenizer = tokenizer if token == "tokenizer" else simple_tokenizer
-            if used_tokenizer.has_rule(rules.stopping):
-                used_tokenizer.make_rule(rules.stopping, stopwords_filename)
-            for filename in filenames:
-                corpus_reader = CorpusReader(filename)
-                for pmid, document in corpus_reader.documents.items():
-                    tokens = [ (i, token) for i, token in enumerate(used_tokenizer.tokenize(document)) ]
-                    indexer.update(pmid, tokens)
-            od = collections.OrderedDict(sorted(indexer.terms.items()))
-            print(one_document(od))
-            print("----")
-            print(highest_frequency(od))
-            end_t = time.time()
-            print(end_t - start_t)
-            write_file(output, od)
-        else:
-            if len(filenames) == 0:
-                print('Error: File or directory (with files) don\'t exist!')
-            if not os.path.isfile(stopwords_filename):
-                print('Error: Stopwords\' file doesn\'t exist!')
-    else:
-        print('Usage: python engine.py [directiory|filename] [output_filename] [tokenizer_name]')
+    result = function(*args, **kwargs)
     end = time.time()
-    print(end - start)
+    return result, end - start
+
+def indexit(tokenizer, filenames):
+    indexer = Indexer(used_tokenizer)
+    for filename in filenames:
+        corpus_reader = CorpusReader(filename)
+        indexer.index(corpus_reader)
+    return indexer
+
+if __name__ == '__main__':
+    tokenizers = { key : value for key, value in globals().items() if type(value) == Tokenizer }
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input', type = str, help = 'Filename or directory with files to index')
+    parser.add_argument('output', type = str, help = 'Filename of the file with the indexer result')
+    parser.add_argument('tokenizer', choices = list(tokenizers.keys()), type = str, help = 'Indicates which tokenizer the indexer must use')
+    parser.add_argument('-s', '--stopwords', type = str, help = 'Filename of the stopwords list (ignored if tokenizer is "simple_tokenizer")', default = 'stopwords.txt')
+    args = parser.parse_args()
+    filenames = get_filenames(args.input)
+    files_exist = len(filenames) != 0
+    stopwords_exist = os.path.isfile(args.stopwords)
+    if files_exist and stopwords_exist:
+        used_tokenizer = tokenizers[args.tokenizer]
+        if used_tokenizer.has_rule(rules.stopping):
+            used_tokenizer.make_rule(rules.stopping, args.stopwords)
+        indexer, interval = timeit(indexit, used_tokenizer, filenames)
+        indexer.save(args.output)
+        print('Answers:')
+        print(' a) Time taken: {:.2f}s; Disk size: {:.1f}kB.'.format(interval, os.path.getsize(args.output) / 1000))
+        print(' b) Vocabulary size: {}.'.format(len(indexer.terms)))
+        print(' c) {}.'.format(one_document(indexer.terms)))
+        print(' d) {}.'.format(highest_frequency(indexer.terms)))
+    else:
+        if not files_exist:
+            print('Error: File or directory (with files) to index doesn\'t exist!')
+        if not stopwords_exist:
+            print('Error: Stopwords\' file doesn\'t exist!')
