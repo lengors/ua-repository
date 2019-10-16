@@ -29,6 +29,7 @@ if __name__ == '__main__':
         inputname, output = sys.argv[1], sys.argv[2]
         filenames = get_filenames(inputname)
         if len(filenames) != 0 and os.path.isfile(stopwords_filename):
+            start_t = time.time()
             indexer = Indexer()
             used_tokenizer = tokenizer
             if used_tokenizer.has_rule(rules.stopping):
@@ -42,6 +43,8 @@ if __name__ == '__main__':
             print(one_document(od))
             print("----")
             print(highest_frequency(od))
+            end_t = time.time()
+            print(end_t - start_t)
             write_file(output, od)
         else:
             if len(filenames) == 0:
