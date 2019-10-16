@@ -24,14 +24,15 @@ def get_filenames(inputname):
 if __name__ == '__main__':
     #temp
     start = time.time()
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         stopwords_filename = 'stopwords.txt'
         inputname, output = sys.argv[1], sys.argv[2]
+        token = sys.argv[3]
         filenames = get_filenames(inputname)
         if len(filenames) != 0 and os.path.isfile(stopwords_filename):
             start_t = time.time()
             indexer = Indexer()
-            used_tokenizer = tokenizer
+            used_tokenizer = tokenizer if token == "tokenizer" else simple_tokenizer
             if used_tokenizer.has_rule(rules.stopping):
                 used_tokenizer.make_rule(rules.stopping, stopwords_filename)
             for filename in filenames:
@@ -52,6 +53,6 @@ if __name__ == '__main__':
             if not os.path.isfile(stopwords_filename):
                 print('Error: Stopwords\' file doesn\'t exist!')
     else:
-        print('Usage: python engine.py [directiory|filename] [output_filename]')
+        print('Usage: python engine.py [directiory|filename] [output_filename] [tokenizer_name]')
     end = time.time()
     print(end - start)
