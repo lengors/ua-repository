@@ -24,7 +24,7 @@ def sizeof_fmt(size, number_fmt = '{:.1f}', suffix = 'B'):
     for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
         if size < 1024:
             return fmt.format(size, unit, suffix)
-        num /= 1024.0
+        size /= 1024.0
     return fmt.format(size, 'Yi', suffix)
 
 def timeit(function, *args, **kwargs):
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         indexer, interval = timeit(indexit, used_tokenizer, filenames)
         indexer.save(args.output)
         print('Answers:')
-        print(' a) Time taken: {:.2f}s; Disk size: {:.1f}kB.'.format(interval, os.path.getsize(args.output) / 1000))
+        print(' a) Time taken: {:.2f}s; Disk size: {}.'.format(interval, sizeof_fmt(os.path.getsize(args.output))))
         print(' b) Vocabulary size: {}.'.format(len(indexer.terms)))
         print(' c) {}.'.format(one_document(indexer.terms)))
         print(' d) {}.'.format(highest_frequency(indexer.terms)))
