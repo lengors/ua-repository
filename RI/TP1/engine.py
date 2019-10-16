@@ -5,7 +5,7 @@ import argparse, rules
 import os, time
 
 def one_document(od):
-    return [ term for term, docs in sorted(od.items()) if len(docs) == 1 ][:10]
+    return [ term for term, docs in od.items() if len(docs) == 1 ][:10]
 
 def highest_frequency(od):
     return [ term for term, _ in sorted(od.items(), key = lambda x: len(x[1]), reverse = True)[:10] ]
@@ -16,6 +16,16 @@ def get_filenames(inputname):
     elif os.path.isdir(inputname):
         return [ os.path.join(inputname, filename) for filename in os.listdir(inputname) if os.path.isfile(os.path.join(inputname, filename)) ]
     return [ ]
+
+# taken and adapted from: https://stackoverflow.com/questions/1094841/reusable-library-to-get-human-readable-version-of-file-size
+# converts size in bytes to a human readable version of that size
+def sizeof_fmt(size, number_fmt = '{:.1f}', suffix = 'B'):
+    fmt = number_fmt + '{}{}'
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if size < 1024:
+            return fmt.format(size, unit, suffix)
+        num /= 1024.0
+    return fmt.format(size, 'Yi', suffix)
 
 def timeit(function, *args, **kwargs):
     start = time.time()
@@ -28,10 +38,11 @@ def indexit(tokenizer, filenames):
     for filename in filenames:
         corpus_reader = CorpusReader(filename)
         indexer.index(corpus_reader)
+    indexer.sort()
     return indexer
 
 if __name__ == '__main__':
-    tokenizers = { key : value for key, value in globals().items() if type(value) == Tokenizer }
+    tokenizers = { key : value for key, value in globals().items() if isinstance(value, Tokenizer) }
     parser = argparse.ArgumentParser()
     parser.add_argument('input', type = str, help = 'Filename or directory with files to index')
     parser.add_argument('output', type = str, help = 'Filename of the file with the indexer result')
