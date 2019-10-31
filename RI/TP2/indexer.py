@@ -59,7 +59,7 @@ class Indexer:
     def sort(self):
         self.terms = collections.OrderedDict(sorted(self.terms.items()))
             
-    def calc_idf():
+    def calc_idf(self, num_docs):
         return log10(num_docs / len(indexer.terms[term]))
 
     def __repr__(self):
