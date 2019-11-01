@@ -70,6 +70,9 @@ class DocumentCount(int):
     def __add__(self, value):
         return DocumentCount(super().__add__(value))
 
+class Document(list):
+    pass
+
 class Term(dict):
     def save(self):
         return ''.join([ ',{}:{}'.format(pmid, len(doc)) for pmid, doc in self.items() ])
@@ -88,7 +91,7 @@ class Indexer:
         def __call__(self, terms : dict, pmid, document):
             for i, term in enumerate(self.tokenizer.tokenize(document)):
                 term_index = terms.setdefault(term, Term())
-                doc_positions = term_index.setdefault(pmid, list())
+                doc_positions = term_index.setdefault(pmid, Document())
                 doc_positions.append(i)
 
     def __init__(self, tokenizer : Tokenizer, store_positions : bool = False, spimi_approach : bool = False):
