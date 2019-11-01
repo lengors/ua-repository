@@ -3,8 +3,6 @@ from corpus_reader import CorpusReader
 from indexer import Indexer
 import argparse, rules
 import os, time
-from math import log10
-
 
 '''
     Trabalho realizado por : 
@@ -39,18 +37,19 @@ def sizeof_fmt(size, number_fmt = '{:.1f}', suffix = 'B'):
 
 def timeit(function, *args, **kwargs):
     start = time.time()
-    result, num_docs = function(*args, **kwargs)
+    result = function(*args, **kwargs)
     end = time.time()
     return result, end - start
 
-def indexit(tokenizer, filenames):
-    indexer = Indexer(used_tokenizer)
+def indexit(tokenizer, filenames, store_positions = False, calculate_tfidf = False, spimi_approach = False):
+    indexer = Indexer(used_tokenizer, store_positions = store_positions, spimi_approach = spimi_approach)
     for filename in filenames:
         corpus_reader = CorpusReader(filename)
         indexer.index(corpus_reader)
+    if calculate_tfidf:
+        indexer.apply(rules.ranker)
     indexer.sort()
     return indexer
-
 
 if __name__ == '__main__':
     tokenizers = { key : value for key, value in globals().items() if isinstance(value, Tokenizer) }
@@ -67,10 +66,10 @@ if __name__ == '__main__':
         used_tokenizer = tokenizers[args.tokenizer]
         if used_tokenizer.has_rule(rules.stopping):
             used_tokenizer.make_rule(rules.stopping, args.stopwords)
-        indexer, interval = timeit(indexit, used_tokenizer, filenames)
+        indexer, interval = timeit(indexit, used_tokenizer, filenames, store_positions = True, calculate_tfidf = True, spimi_approach = True)
         indexer.save(args.output)
         print('Answers:')
-        print(' a) Time taken: {:.2f}s; Disk size: {}.'.format(interval, sizeof_fmt(os.path.getsize(args.output))))
+        print(' a) Time taken: {}s; Disk size: {}.'.format(interval, sizeof_fmt(os.path.getsize(args.output))))
         print(' b) Vocabulary size: {}.'.format(len(indexer.terms)))
         print(' c) {}.'.format(one_document(indexer.terms)))
         print(' d) {}.'.format(highest_frequency(indexer.terms)))

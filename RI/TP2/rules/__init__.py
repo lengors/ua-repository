@@ -4,6 +4,7 @@ from .stemming import stemming
 from .replace import replace
 from .filter import filter
 from .modify import modify
+from .ranker import ranker
 from .apply import apply
 from .find import find
 from .map import map
