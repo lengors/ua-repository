@@ -151,8 +151,8 @@ class Indexer:
                     documents[pmid] = (0 if count == 0 else (1 + math.log10(count)) * idf, count)
                 self.terms[term] = (idf, documents)
 
-        def _write_ranked(self, output_file, line : tuple):
-            pass
+        def _write_ranked(self, line : tuple):     # line = (termo, {doc_id : (weight, count)})
+            return '{},{}\n'.format(line[0], ','.join([ '{}:({}, {})'.format(pmid, weight, count) for pmid, weight, count in line[1].items() ]))
 
         def _write_unranked(self, line : tuple):
             return '{},{}\n'.format(line[0], ','.join([ '{}:{}'.format(pmid, count) for pmid, count in line[1].items() ]))
@@ -214,6 +214,22 @@ class Indexer:
                     positions = documents.get(pmid, [])
                     documents[pmid] = (0 if len(positions) == 0 else (1 + math.log10(len(positions))) * idf, positions)
                 self.terms[term] = (idf, documents)
+
+        def _parse_unranked(self, line : str):
+            term, *docs = line.split('-')
+            return (term, { key : [index.split(',') for index in value]] for key, value in [ doc.split(':') for doc in docs ] })
+
+        def _merge_unranked(self, docs0 : dict, docs1 : dict):
+            return { key : sorted(docs0.get(key, []) + docs1.get(key, [])) for key in docs0.keys() | docs1.keys() }
+
+        def _write_unranked(self, line : tuple):   # line = (termo, {doc_id : [index1, index2]})
+            final = '{}-'.format(line[0])
+            for pmid in line[1]:
+                string = str(line[1].values()[0])
+                for index in line[1].values()[1:]:
+                    string += ',' + str(index)
+                final +=  '{} : {}\n'.format(pmid, string)
+            return final
         
         def __str__(self):
             return '\n'.join([ '{}:{};{}'.format(term, idf, ';'.join([ '{}:{}{}'.format(pmid, weight, '' if len(positions) == 0 else ':{}'.format(','.join([ str(position) for position in positions ]))) for pmid, (weight, positions) in documents.items() ])) for term, (idf, documents) in self.terms.items() ]) if self.ranked else '\n'.join([ '{},{}'.format(term, ','.join([ '{}:{}'.format(pmid, len(positions)) for pmid, positions in documents.items() ])) for term, documents in self.terms.items() ])
