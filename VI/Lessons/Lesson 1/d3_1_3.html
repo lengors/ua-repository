@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>First D3 Example</title>
+        <script type="text/javascript" src="http://d3js.org/d3.v5.js"></script>
+        <style>
+            div.bar {
+                display: inline-block;
+                width: 20px;
+                height: 75px;
+                margin-right: 2px;
+                background-color: teal;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var dataset = []; 
+            for (let i = 0; i < 25; i++) 
+                dataset.push(Math.random() * 30); 
+
+            var scale = 5;
+            var margin_right = 20;
+
+            d3.select('body')
+                .selectAll('div')
+                .data(dataset)
+                .enter()
+                .append('div')
+                    .attr('class', 'bar')
+                    .style('height', d => margin_right + scale * d + 'px');
+        </script>
+    </body>
+</html>

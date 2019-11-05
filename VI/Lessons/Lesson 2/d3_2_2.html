@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>First D3 Example</title>
+        <script type="text/javascript" src="http://d3js.org/d3.v5.js"></script>
+    </head>
+    <body>
+        <div class="div_d3"></div>
+        <script type="text/javascript">
+            let width = 500;
+            let height = 50;
+
+            let svg = d3.select('body')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .style('background-color', 'teal');
+
+            let dataset = [ 5, 10, 15, 20, 25 ];
+
+            let circles = svg.selectAll('circle')
+                .data(dataset)
+                .enter()
+                .append('circle');
+
+            circles.attr('cx', (d, i) => i * 50 + 25)
+                .attr('cy', () => height / 2)
+                .attr('r', d => d);
+        </script>
+    </body>
+</html>

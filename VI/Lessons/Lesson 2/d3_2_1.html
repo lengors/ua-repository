@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>First D3 Example</title>
+        <script type="text/javascript" src="http://d3js.org/d3.v5.js"></script>
+    </head>
+    <body>
+        <div class="div_d3"></div>
+        <script type="text/javascript">
+            let svg = d3.select('.div_d3')
+                .append('svg')
+                .attr('width', 600)
+                .attr('height', 300)
+                .style('background-color', '#ffa07a');
+
+            let circle = svg.append('circle')
+                .attr('fill', 'red')
+                .attr('cx', 300)
+                .attr('cy', 150)
+                .attr('r', 50);
+        </script>
+    </body>
+</html>

@@ -4,15 +4,16 @@ from indexer import Indexer
 import argparse, rules
 import os, time
 
-
 '''
     Trabalho realizado por : 
         - Lucas Barros, nmec : 83895;
         - Pedro Cavadas, nmec : 85090;
 '''
 
+# idf = log10(N / dft), N = nº total de documentos, dft n º de documentos em que o termo aparece
+
 def one_document(od):
-    return [ term for term, docs in od.items() if len(docs) == 1 ][:10]
+    return [ term for term, docs in od.items() if len([ pmid for pmid, value in (docs[1] if type(docs) == tuple else docs).items() if type(value) == int and value != 0 or type(value) == list and len(value) != 0 ]) == 1 ][:10]
 
 def highest_frequency(od):
     return [ term for term, _ in sorted(od.items(), key = lambda x: len(x[1]), reverse = True)[:10] ]
@@ -40,11 +41,14 @@ def timeit(function, *args, **kwargs):
     end = time.time()
     return result, end - start
 
-def indexit(tokenizer, filenames):
-    indexer = Indexer(used_tokenizer)
+def indexit(tokenizer, filenames, store_positions = False, calculate_tfidf = False):
+    indexer = Indexer(used_tokenizer, 'indexer', store_positions = store_positions)
     for filename in filenames:
         corpus_reader = CorpusReader(filename)
         indexer.index(corpus_reader)
+    if calculate_tfidf:
+        indexer.rank()
+    indexer.merge()
     indexer.sort()
     return indexer
 
@@ -63,13 +67,13 @@ if __name__ == '__main__':
         used_tokenizer = tokenizers[args.tokenizer]
         if used_tokenizer.has_rule(rules.stopping):
             used_tokenizer.make_rule(rules.stopping, args.stopwords)
-        indexer, interval = timeit(indexit, used_tokenizer, filenames)
+        indexer, interval = timeit(indexit, used_tokenizer, filenames, store_positions = False, calculate_tfidf = False)
         indexer.save(args.output)
         print('Answers:')
         print(' a) Time taken: {}s; Disk size: {}.'.format(interval, sizeof_fmt(os.path.getsize(args.output))))
         print(' b) Vocabulary size: {}.'.format(len(indexer.terms)))
-        print(' c) {}.'.format(one_document(indexer.terms)))
-        print(' d) {}.'.format(highest_frequency(indexer.terms)))
+        # print(' c) {}.'.format(one_document(indexer.terms)))
+        # print(' d) {}.'.format(highest_frequency(indexer.terms)))
     else:
         if not files_exist:
             print('Error: File or directory (with files) to index doesn\'t exist!')
