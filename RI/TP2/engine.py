@@ -41,15 +41,12 @@ def timeit(function, *args, **kwargs):
     end = time.time()
     return result, end - start
 
-def indexit(tokenizer, filenames, store_positions = False, calculate_tfidf = False):
+def indexit(tokenizer, output_filename, filenames, store_positions = False, calculate_tfidf = False):
     indexer = Indexer(used_tokenizer, 'indexer', store_positions = store_positions)
     for filename in filenames:
         corpus_reader = CorpusReader(filename)
         indexer.index(corpus_reader)
-    if calculate_tfidf:
-        indexer.rank()
-    indexer.merge()
-    indexer.sort()
+    indexer.merge(output_filename, calculate_tfidf)
     return indexer
 
 if __name__ == '__main__':
@@ -67,8 +64,7 @@ if __name__ == '__main__':
         used_tokenizer = tokenizers[args.tokenizer]
         if used_tokenizer.has_rule(rules.stopping):
             used_tokenizer.make_rule(rules.stopping, args.stopwords)
-        indexer, interval = timeit(indexit, used_tokenizer, filenames, store_positions = False, calculate_tfidf = False)
-        indexer.save(args.output)
+        indexer, interval = timeit(indexit, used_tokenizer, args.output, filenames, store_positions = False, calculate_tfidf = False)
         print('Answers:')
         print(' a) Time taken: {}s; Disk size: {}.'.format(interval, sizeof_fmt(os.path.getsize(args.output))))
         print(' b) Vocabulary size: {}.'.format(len(indexer.terms)))

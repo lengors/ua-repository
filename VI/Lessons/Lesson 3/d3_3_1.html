@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>First D3 Example</title>
+        <script type="text/javascript" src="http://d3js.org/d3.v5.js"></script>
+    </head>
+    <body>
+        <div class="div_d3"></div>
+        <script type="text/javascript">
+            let width = 500;
+            let height = 100;
+            let minSize = 10;
+            let maxSize = 10;
+            let minRadius = 2;
+            let maxRadius = 10;
+
+            let svg = d3.select('body')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .style('background-color', 'teal');
+
+            let dataset = [];
+            let size = Math.floor(Math.random() * (maxSize - minSize) + minSize);
+            for (let i = 0; i < size; ++i) {
+                let radius = Math.floor(Math.random() * (maxRadius - minRadius) + minRadius);
+                dataset.push([
+                    Math.floor(Math.random() * (width - radius * 2) + radius),
+                    Math.floor(Math.random() * (height - radius * 2) + radius),
+                    radius
+                ]);
+            }
+
+            let circles = svg.selectAll('circle')
+                .data(dataset)
+                .enter()
+                .append('circle');
+
+            circles.attr('cx', d => d[0])
+                .attr('cy', d => d[1])
+                .attr('r', d => d[2]);
+
+            let labels = svg.selectAll('text')
+                .data(dataset)
+                .enter()
+                .append('text')
+                    .text(d => `(${d[0]}, ${d[1]})`)
+                    .attr('x', d => d[0])
+                    .attr('y', d => d[1])
+                    .attr('fill', 'red');
+        </script>
+    </body>
+</html>
