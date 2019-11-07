@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+
 #include <sndfile.hh>
 
 class WAVHist {
