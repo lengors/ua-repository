@@ -1,0 +1,7 @@
+Question: What is the average number of roads a taxi passes by during a day?
+
+Strategy/Paper: Based on the paper "A Hidden Markov Model-based Map-Matching Approach for Low-Sampling-Rate GPS Trajectories" by
+Yu-Ling Hsueh, Ho-Chian Chen, and Wei-Jie Huang map the gps coordinates provided in the dataset to the road map provided. After 
+that iterate chronologically (for each taxi) through the mapped points and get the date and time that the taxi enters a road, and
+the time it remains in that road. Store that information based on the multidimensional model. In the end use that information to
+create the average number of roads a taxi passes by during a day.

@@ -1,0 +1,9 @@
+1. OLTP stands for On-Line Transaction Processing and focus on single transactions while in OLAP,
+which stands for On-Line Analytical Processong, the focus is on analysis of the data. In OLTP
+data may be updated, added or deleted, while in OLAP data is simply added, this is because,
+in OLAP we want to analyze data and therefore need all "instances" (per say) of the data,
+while in OLTP we only need the most recent "instance". This translates to the following,
+OLAP is excelent to process huge amounts of data, while OLTP is excelent to process
+very small amounts.
+
+2.

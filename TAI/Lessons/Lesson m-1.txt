@@ -1,0 +1,37 @@
+y = C(x) : compressão se |y| < |x|
+
+Codificação aritmética: mapeamento de objetos a comprimir (nº infinito contável) num intervalo [0, 1[ (nº infinito não contável)
+	- o codificador pode falhar (possibilidade muito remota)
+
+a -> [0, 0.1[
+b -> [0.1, 0.6[
+c -> [0.6, 1[
+
+codificar "baac"
+
+L0 = 0
+H0 = 1
+
+L1 = 0.1
+H1 = 0.6
+
+L2 = 0.1
+H2 = 0.15
+
+...
+
+L -> limite inferior do intervalo
+H -> limite superior do intervalo
+l -> limite inferior do valor atual
+h -> limite superior do valor atual
+
+L(n + 1) = L(n) + (H(n) - L(n)) * l(n)
+H(n + 1) = L(n) + (H(n) - L(n)) * h(n)
+
+Intervalo final representa todas as mensagens com o prefixo.
+
+Geralmente utiliza-se o limite inferior como código, e transmite-se também o comprimento da mensagem.
+
+Descodificação:
+
+x = (x' - l) / (h - l)
