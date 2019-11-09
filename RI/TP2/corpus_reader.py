@@ -1,17 +1,16 @@
 class CorpusReader:
     def __init__(self, file):
-        self.load(file)
+        self.file = file
 
-    def __load(self, file):
-        self.num_docs = 0
-        current, pmid = str(), None
-        self.documents, read = dict(), False
-        for line in file:
+    def items(self):
+        if type(self.file) == str:
+            self.file = open(self.file, 'r', encoding = 'iso-8859-1')
+        current, pmid, read = str(), None, False
+        for line in self.file:
             if len(line) >= 5 and line[4] == '-':
                 if line[:4] == 'PMID':
                     if pmid is not None:
-                        self.documents[pmid] = current
-                        self.num_docs += 1
+                        yield (pmid, current)
                     pmid = line[5:].strip()
                     current, read = str(), False
                 else:
@@ -21,11 +20,5 @@ class CorpusReader:
             elif read:
                 current += line
         if pmid is not None:
-            self.documents[pmid] = current
-
-    def load(self, file):
-        if type(file) == str:
-            with open(file, 'r', encoding = "iso-8859-1") as fin:
-                self.__load(fin)
-        else:
-            self.__load(fin)
+            yield (pmid, current)
+        self.file.close()
