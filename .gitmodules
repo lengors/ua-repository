@@ -1,0 +1,3 @@
+[submodule "VI/TP2/data_visualization_survey"]
+	path = VI/TP2/data_visualization_survey
+	url = https://github.com/data-visualization-society/data_visualization_survey
