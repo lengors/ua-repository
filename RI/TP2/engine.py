@@ -56,15 +56,20 @@ if __name__ == '__main__':
     parser.add_argument('output', type = str, help = 'Filename of the file with the indexer result')
     parser.add_argument('tokenizer', choices = list(tokenizers.keys()), type = str, help = 'Indicates which tokenizer the indexer must use')
     parser.add_argument('-s', '--stopwords', type = str, help = 'Filename of the stopwords list (ignored if tokenizer is "simple_tokenizer")', default = 'stopwords.txt')
+    parser.add_argument('--store_positions', type = str, help = 'Indicates if indexer stores positions of terms or not')
+    parser.add_argument('--tfidf', type = str, help = 'Indicates if program calculates tfidf or not')
+    parser.add_argument('-m', type = int, help = 'Percentage of max memory used in the process', default = 20)
     args = parser.parse_args()
     filenames = get_filenames(args.input)
     files_exist = len(filenames) != 0
     stopwords_exist = os.path.isfile(args.stopwords)
+    store_positions = True if args.store_positions else False
+    tfidf = True if args.tfidf else False
     if files_exist and stopwords_exist:
         used_tokenizer = tokenizers[args.tokenizer]
         if used_tokenizer.has_rule(rules.stopping):
             used_tokenizer.make_rule(rules.stopping, args.stopwords)
-        indexer, interval = timeit(indexit, used_tokenizer, args.output, filenames, store_positions = False, calculate_tfidf = False)
+        indexer, interval = timeit(indexit, used_tokenizer, args.output, filenames, store_positions = store_positions, calculate_tfidf = tfidf)
         print('Answers:')
         print(' a) Time taken: {}s; Disk size: {}.'.format(interval, sizeof_fmt(os.path.getsize(args.output))))
         print(' b) Vocabulary size: {}.'.format(len(indexer.terms)))
