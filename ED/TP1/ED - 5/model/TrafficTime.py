@@ -1,7 +1,7 @@
-from .Registable import Registable
+from .Dimension import Dimension
 from datetime import time
 
-class TrafficTime(time, Registable):
+class TrafficTime(time, Dimension):
     @property
     def timestamp(self):
         return self.second + self.minute * 60 + self.hour * 1440

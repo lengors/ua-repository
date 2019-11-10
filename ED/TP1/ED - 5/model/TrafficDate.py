@@ -1,7 +1,7 @@
-from .Registable import Registable
+from .Dimension import Dimension
 from datetime import date
 
-class TrafficDate(date, Registable):
+class TrafficDate(date, Dimension):
     @property
     def weekday(self):
         return super().weekday()

@@ -1,4 +1,4 @@
-class Registable:
+class Dimension:
     @classmethod
     def get(cls, argument):
         if not hasattr(cls, 'REGISTERED'):
