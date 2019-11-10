@@ -9,20 +9,18 @@ class FileReader:
     def __init__(self, file):
         self.file = file
         self.list_roads = []
-        self.dict_taxis = OrderedDict()
+        self.list_taxis = []
 
 
     def taxifilereader(self):
 
         taxi_pos = None
         dict_default = self.dict_taxis.setdefault
-        result = list()
 
         with open(self.file) as file:
             for line in file:
                 _, _, id, segment, _, _, dt  = re.split(r'\t+', line.strip().rstrip('\t'))
-                result.append(TaxiEvent(segment, id, dt))
-        return result
+                self.list_taxis.append(TaxiEvent(segment, id, dt))
 
 
     def roadfilereader(self):

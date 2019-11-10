@@ -9,11 +9,11 @@ def main(argv : list):
     taxireader = FileReader(os.path.join(folder, 'my_taxisgps.txt'))
     # roadreader = FileReader(os.path.join(folder, 'my_road_segments.txt'))
 
-    events = taxireader.taxifilereader()
+    taxireader.taxifilereader()
     # roadreader.roadfilereader()
 
     # create model
-    model = Model(events)
+    model = Model(taxireader.list_taxis)
 
     # group by taxi
     by_taxi = model.group('taxi', 'date')
