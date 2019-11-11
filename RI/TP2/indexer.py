@@ -9,6 +9,7 @@ class Indexer:
             self.terms = {}
             self.segments = []
             self.documents = set()
+            self.__disposed = False
             self.tokenizer = tokenizer
             self.index_folder = index_folder
             self.max_memory_usage = max_memory_usage
@@ -26,7 +27,7 @@ class Indexer:
                 os.mkdir(self.segm_index_folder)
 
         def __del__(self):
-            shutil.rmtree(self.index_folder)
+            self.dispose()
 
         def dispatch(self):
             if type(self.terms) != collections.OrderedDict:
@@ -36,6 +37,11 @@ class Indexer:
                 fout.write(self.__str__())
             self.terms = {}
             gc.collect()
+        
+        def dispose(self):
+            if not self.__disposed:
+                shutil.rmtree(self.index_folder)
+                self.__disposed = True
 
         def index(self, corpus_reader : CorpusReader):
             for pmid, document in corpus_reader.items():
