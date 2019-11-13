@@ -15,12 +15,12 @@ class FileReader:
     def taxifilereader(self):
 
         taxi_pos = None
-        dict_default = self.dict_taxis.setdefault
+        list_append = self.list_taxis.append
 
         with open(self.file) as file:
             for line in file:
                 _, _, id, segment, _, _, dt  = re.split(r'\t+', line.strip().rstrip('\t'))
-                self.list_taxis.append(TaxiEvent(segment, id, dt))
+                list_append(TaxiEvent(segment, id, dt))
 
 
     def roadfilereader(self):

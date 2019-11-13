@@ -1,7 +1,10 @@
 from FileReader import FileReader
 from datetime import datetime
 from model import *
+from matplotlib import pyplot as plt
 import sys, os
+
+weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ]
 
 def main(argv : list):
     # read taxi records
@@ -25,18 +28,19 @@ def main(argv : list):
     # print(model.average()) # average of all taxis
     # print(by_taxi.average(1)) # average of taxi 1
 
-    print(by_taxi.average(1))
-    print(by_date.average())
-    print(by_date.average())
+    print()
+    print('Average number of roads passed by a taxi during a day: {:.2f}'.format(by_date.average()))
+    print()
 
-    '''total = 0
-    for taxi, events in by_taxi.events.items():
-        es = events.get(datetime.strptime('2008-02-08', '%Y-%m-%d').date())
-        if es:
-            total += len(set([ event.segment for event in es ]))
+    x = list(sorted(by_date.events[1].keys()))
+    y = [ by_date.average(date) for date in x ]
+    x = [ '{} ({})'.format(str(date), weekdays[date.weekday]) for date in x ]
 
-    print(total / len(by_taxi.events))
-    print(by_date.average(datetime.strptime('2008-02-08', '%Y-%m-%d').date()))'''
+    plt.plot(x, y)
+    plt.title('Average number of roads passed by a taxi per day')
+    plt.xlabel('Date')
+    plt.ylabel('Average number of roads')
+    plt.show()
 
 if __name__ == '__main__':
     main(sys.argv[1:])
