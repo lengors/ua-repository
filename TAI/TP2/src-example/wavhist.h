@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-#include <sndfile.hh>
+#include <sndfile.h>
 
 class WAVHist {
   private:

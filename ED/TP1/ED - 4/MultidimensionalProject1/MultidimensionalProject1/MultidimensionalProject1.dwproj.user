@@ -1,0 +1,29 @@
+<AnalysisServicesUserConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl300="http://schemas.microsoft.com/analysisservices/2011/engine/300" xmlns:ddl300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300" xmlns:ddl400="http://schemas.microsoft.com/analysisservices/2012/engine/400" xmlns:ddl400_400="http://schemas.microsoft.com/analysisservices/2012/engine/400/400" xmlns:ddl500="http://schemas.microsoft.com/analysisservices/2013/engine/500" xmlns:ddl500_500="http://schemas.microsoft.com/analysisservices/2013/engine/500/500" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0">
+  <Configurations>
+    <Configuration>
+      <Name>Development</Name>
+      <Options>
+        <UserIDs>
+          <ConfigurationSetting>
+            <Id>Ed85090_99788</Id>
+            <Name>Ed85090_99788</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAATNGP3uAnBkGDFRv2WxBwEwAAAAAcAAAARQBkADgANQAwADkAMABfADkAOQA3ADgAOAAAABBmAAAAAQAAIAAAAE3+6rXQq+CvA3fYnF3s2sB0v+6nQ/12J+LA/QEQzUlLAAAAAA6AAAAAAgAAIAAAANZOQAaA+DWHxTNRuiK0SQhCoab/fBmbdGiiiVcvJDY+EAAAAHB4bMmn+wBkjzeBw+aOlLlAAAAABO+FPNGvUn/nkui9gMf84ecDxwKgVJJphUghI0g4JnvWa1s+fGY1SP84h0ViVrhxIYN2Z7TdcPDUYGJLmHo7lw==</Value>
+          </ConfigurationSetting>
+        </UserIDs>
+        <UserPasswords>
+          <ConfigurationSetting>
+            <Id>Ed85090_99788</Id>
+            <Name>Ed85090_99788</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAATNGP3uAnBkGDFRv2WxBwEwAAAAAcAAAARQBkADgANQAwADkAMABfADkAOQA3ADgAOAAAABBmAAAAAQAAIAAAAP91MiF8s5T3aoKuKKC2w2FS5c/uf0/4RbCbcAv3HSsiAAAAAA6AAAAAAgAAIAAAAObwTJSrWX0hSMugUTQorFLNTrYZXZT/UtVpUN299bRTIAAAAFXkUIcBtxAd51FI8QeJfD2EhyUHlpdniccZiJpnPJ+lQAAAAG0abPIpLNy1KvQTsj9BtkalpvsAWrcMgWx2dieLx905/i4PBAXR78t2B9WSh3RZDXr0j8ORTC2JBbHHN2yJ+eI=</Value>
+          </ConfigurationSetting>
+        </UserPasswords>
+        <TargetServer>deti-sql-aulas.ua.pt</TargetServer>
+        <TargetDatabase>ed85090</TargetDatabase>
+        <StartObject>
+          <ObjectId></ObjectId>
+          <ObjectType>Current</ObjectType>
+        </StartObject>
+      </Options>
+    </Configuration>
+  </Configurations>
+</AnalysisServicesUserConfiguration>

@@ -1,0 +1,96 @@
+﻿<DeploymentSnapshot xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl300="http://schemas.microsoft.com/analysisservices/2011/engine/300" xmlns:ddl300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300" xmlns:ddl400="http://schemas.microsoft.com/analysisservices/2012/engine/400" xmlns:ddl400_400="http://schemas.microsoft.com/analysisservices/2012/engine/400/400" xmlns:ddl500="http://schemas.microsoft.com/analysisservices/2013/engine/500" xmlns:ddl500_500="http://schemas.microsoft.com/analysisservices/2013/engine/500/500" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0">
+  <Target>
+    <Database>ed85090</Database>
+    <Server>deti-sql-aulas.ua.pt</Server>
+    <ConnectionString>Data Source=deti-sql-aulas.ua.pt;Timeout=0</ConnectionString>
+  </Target>
+  <Options>
+    <TransactionalDeployment>false</TransactionalDeployment>
+    <PartitionDeployment>DeployPartitions</PartitionDeployment>
+    <RoleDeployment>DeployRolesRetainMembers</RoleDeployment>
+    <ProcessingOption>Default</ProcessingOption>
+    <OutputScript></OutputScript>
+    <ImpactAnalysisFile></ImpactAnalysisFile>
+    <ConfigurationSettingsDeployment>Deploy</ConfigurationSettingsDeployment>
+    <OptimizationSettingsDeployment>Deploy</OptimizationSettingsDeployment>
+    <WriteBackTableCreation>UseExisting</WriteBackTableCreation>
+  </Options>
+  <Snapshot>
+    <ObjectSnapshots>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.RelationalDataSource</Type>
+        <TimeStamp>+vhx0M2PIE/XbmZbaewVeQ2sVUI=13/11/2019 23:49:5713/11/2019 23:46:17</TimeStamp>
+        <ID>
+          <String>Ed85090_99788</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.DataSourceView</Type>
+        <TimeStamp>qKD4AE9c2RaTO/4DfSHac/deEO4=13/11/2019 23:47:1913/11/2019 23:47:19</TimeStamp>
+        <ID>
+          <String>Ed85090_99788</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>gT2DzW3muHDZFVSFc64UqE8m+DY=13/11/2019 23:49:0013/11/2019 23:49:00</TimeStamp>
+        <ID>
+          <String>D TIME</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>2cAMc4od/ADxU7eguqcrYpN29iQ=13/11/2019 23:49:0013/11/2019 23:49:00</TimeStamp>
+        <ID>
+          <String>D PRODUCT</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>erqH0gcNM+r2oqP2dfN5iRRkb+4=13/11/2019 23:49:0013/11/2019 23:49:00</TimeStamp>
+        <ID>
+          <String>D EMPLOYEE</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>FjmzaIP1sgA0N4XOH88J8hJ2MVw=13/11/2019 23:49:0013/11/2019 23:49:00</TimeStamp>
+        <ID>
+          <String>D SUPPLIER</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>HIxBuQn2ETqPfgnNjkUpqh0uB08=13/11/2019 23:49:0013/11/2019 23:49:00</TimeStamp>
+        <ID>
+          <String>D CUSTOMER</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>292jvAFYLkNXdk98xFWmeoIQgkY=13/11/2019 23:49:0013/11/2019 23:49:00</TimeStamp>
+        <ID>
+          <String>D SHIPPER</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Cube</Type>
+        <TimeStamp>qrCQ1OBBelX+TbAM03Do6rrb3Qs=13/11/2019 23:49:0013/11/2019 23:49:00DNAVjCMZ8eOIBX+UbmlCnSbxS7c=13/11/2019 23:49:0013/11/2019 23:49:00</TimeStamp>
+        <ID>
+          <String>Ed85090_99788</String>
+        </ID>
+      </ObjectSnapshot>
+    </ObjectSnapshots>
+    <DatabaseSnapshot>
+      <Type>Microsoft.AnalysisServices.Database</Type>
+      <TimeStamp>BYoG2cIaIZnL1QaClaIOKdKsM4Y=13/11/2019 23:44:5613/11/2019 23:44:56</TimeStamp>
+      <ID>
+        <String>ed85090</String>
+      </ID>
+    </DatabaseSnapshot>
+    <Granularity>Coarse</Granularity>
+  </Snapshot>
+  <AssemblyLocations />
+  <ProcessingComplete>true</ProcessingComplete>
+  <LastDeployed>2019-11-13T23:50:07.36Z</LastDeployed>
+</DeploymentSnapshot>

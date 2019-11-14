@@ -1,6 +1,12 @@
 import engine, utils, os, rules
 from itertools import product
 
+'''
+    Trabalho realizado por : 
+        - Lucas Barros, nmec : 83895;
+        - Pedro Cavadas, nmec : 85090;
+'''
+
 def main():
     args = engine.parser.parse_args()
     filenames = utils.get_filenames(args.input)
