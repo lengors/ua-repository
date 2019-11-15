@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include <map>
 
@@ -12,10 +11,10 @@ private:
 	std::vector<std::map<short, size_t>> counts;
 
 public:
-	WAVHist(const SndfileHandle &);
+	WAVHist (const SndfileHandle &);
 
-	void update(const std::vector<short> &);
+	void update (const std::vector<short> &);
 
-	void dump(const size_t &) const;
-	void dump_average(void) const;
+	void dump (const size_t &) const;
+	void dump_average (void) const;
 };
