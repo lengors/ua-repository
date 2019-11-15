@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <sndfile.h>
+#include <sndfile.hh>
 #include "wavhist.h"
 
 using namespace std;
