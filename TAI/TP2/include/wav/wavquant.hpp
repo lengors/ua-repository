@@ -17,7 +17,7 @@ namespace WAV
         std::vector<short> &quantization (void);
 
     private:
-        short s_delta, t_delta;
+        short delta;
         SndfileHandle &fileHandle;
         std::vector<short> samples;
         size_t buffer_size, frames;
