@@ -23,11 +23,11 @@ template<typename T>
 std::ostream &operator<< (std::ostream &stream, const std::vector<T> &vector)
 {
     stream << "(";
-    for (unsigned i = 0; i < vector.size(); ++i)
+    for (unsigned i = 0; i < vector.size(); )
     {
-        stream << value;
-        if (i != vector.size() - 1)
-            stream << ", "
+        stream << vector[i++];
+        if (i != vector.size())
+            stream << ", ";
     }
     return stream << ")";
 }
