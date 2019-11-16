@@ -18,9 +18,6 @@ def main(argv : list):
     # create model
     model = Model(taxireader.list_taxis)
 
-    # group by taxi
-    by_taxi = model.group('taxi', 'date')
-
     # group by date
     by_date = model.group('date', 'taxi')
 

@@ -1,24 +1,26 @@
-#include <wavhist.hpp>
+#include <wav/wavhist.hpp>
 
-WAVHist::WAVHist(const SndFileHandle &sfh)
+#include <iostream>
+
+WAV::Hist::Hist (const SndFileHandle &sfh)
 {
     counts.resize(sfh.channels());
 }
 
-void WAVHist::update(const std::vector<short> &samples)
+void WAV::Hist::update (const std::vector<short> &samples)
 {
     size_t n = 0;
     for (const short &sample : samples)
         ++counts[n++ % counts.size()][sample]
 }
 
-void WAVHist::dump(const size_t &channel) const
+void WAV::Hist::dump (const size_t &channel) const
 {
     for (auto [value, counter] : counts[channel])
         std::cout << value << "\t" << counter << std::endl;
 }
 
-void WAVHist::dump_average(void) const
+void WAV::Hist::dump_average (void) const
 {
     std::map<short, std::size_t> average_counts;
     for (const auto &channel_counts : counts)

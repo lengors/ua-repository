@@ -7,9 +7,10 @@ using namespace std;
 
 constexpr size_t FRAMES_BUFFER_SIZE = 65536; // Buffer for reading frames
 
-int main(int argc, char *argv[]) {
-
-	if(argc < 3) {
+int main (int argc, char *argv[])
+{
+	if(argc < 3)
+	{
 		cerr << "Usage: wavhist <input file> <channel>" << endl;
 		return 1;
 	}
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
 
 	size_t nFrames;
 	vector<short> samples(FRAMES_BUFFER_SIZE * sndFile.channels());
-	WAVHist hist { sndFile };
+	WAV::Hist hist{ sndFile };
 	while((nFrames = sndFile.readf(samples.data(), FRAMES_BUFFER_SIZE))) {
 		samples.resize(nFrames * sndFile.channels());
 		hist.update(samples);
