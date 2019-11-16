@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     WAV::Quant quantitizer(bits, sndFileIn);
     while (size_t frames = quantitizer.next())
-        sndFileOut.writef(quantitizer.quantization().data(), frames);
+        sndFileOut.writef(std::vector<signed char>().data(), frames);
 
 	return 0;
 }
