@@ -28,5 +28,5 @@ std::optional<std::tuple<float, unsigned>> WAV::compare(SndfileHandle &file, Snd
             diff_sum += diff * diff;
         }
     }
-    return { 10 * std::log10(sum / diff_sum), unsigned(max) };
+    return { float(10 * std::log10(sum / diff_sum)), unsigned(max) };
 }
