@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 	{
 		auto [snr, max] = snrmax.value();
         std::cout << "SNR: " << snr << std::endl;
-        std::cout << "Maximum per sample absolute error: " << snr << std::endl;
+        std::cout << "Maximum per sample absolute error: " << max << std::endl;
 
 	}
 
