@@ -6,7 +6,7 @@ WAV::Quant::Quant (const size_t &bits, const size_t &buffer_size, SndfileHandle 
 }
 
 WAV::Quant::Quant (const size_t &bits, SndfileHandle &fileHandle) :
-    WAVQuant(bits, 65536, fileHandle)
+    Quant(bits, 65536, fileHandle)
 {
 }
 
