@@ -64,9 +64,9 @@ int main(int argc, char *argv[]) {
 	cout << '\t' << sndFile.channels() << " channels" << endl;
 
     std::optional<std::tuple<float, unsigned>> snrmax = WAV::compare(sndFile, originalSndFile);
-    if (snr.has_value())
+    if (snrmax.has_value())
 	{
-		auto [snr, max] = snrmax.value()
+		auto [snr, max] = snrmax.value();
         std::cout << "SNR: " << snr << std::endl;
         std::cout << "Maximum per sample absolute error: " << snr << std::endl;
 
