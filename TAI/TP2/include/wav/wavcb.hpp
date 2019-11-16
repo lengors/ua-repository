@@ -15,7 +15,7 @@ namespace WAV
 
         std::vector<std::vector<short>> compute (SndfileHandle &, const size_t & = 65536);
     private:
-        size_t block_size, offset, cluster_size;
+        size_t vector_size, offset, cluster_size;
     };
 }
 
