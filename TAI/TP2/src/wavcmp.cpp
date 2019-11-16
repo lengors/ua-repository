@@ -63,9 +63,14 @@ int main(int argc, char *argv[]) {
 	cout << '\t' << sndFile.samplerate() << " samples per second" << endl;
 	cout << '\t' << sndFile.channels() << " channels" << endl;
 
-    std::optional<float> snr = WAV::compare(sndFile, originalSndFile);
+    std::optional<std::tuple<float, unsigned>> snrmax = WAV::compare(sndFile, originalSndFile);
     if (snr.has_value())
-        std::cout << "SNR: " << snr.value() << std::endl;
+	{
+		auto [snr, max] = snrmax.value()
+        std::cout << "SNR: " << snr << std::endl;
+        std::cout << "Maximum per sample absolute error: " << snr << std::endl;
+
+	}
 
 	return 0;
 }
