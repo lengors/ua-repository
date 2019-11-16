@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	cout << '\t' << sndFileIn.samplerate() << " samples per second" << endl;
 	cout << '\t' << sndFileIn.channels() << " channels" << endl;
 
-	SndfileHandle sndFileOut { argv[argc-1], SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_PCM_16,
+	SndfileHandle sndFileOut { argv[argc-1], SFM_WRITE, SF_FORMAT_WAV | bits > 8 ? SF_FORMAT_PCM_16 : SF_FORMAT_PCM_U8,
 	  sndFileIn.channels(), sndFileIn.samplerate() };
 	if(sndFileOut.error()) {
 		cerr << "Error: invalid output file" << endl;
