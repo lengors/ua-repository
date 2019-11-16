@@ -14,11 +14,12 @@ namespace WAV
         explicit Quant (const size_t &, SndfileHandle &);
 
         const size_t &next (void);
-        std::vector<short> &quantitization (void);
+        std::vector<short> &quantization (void);
 
     private:
+        short s_delta, t_delta;
         SndfileHandle &fileHandle;
         std::vector<short> samples;
-        size_t delta, buffer_size, frames;
+        size_t buffer_size, frames;
     };
 }

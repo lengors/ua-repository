@@ -1,9 +1,7 @@
 #include <wav/wavquant.hpp>
 
-#include <cmath>
-
 WAV::Quant::Quant (const size_t &bits, const size_t &buffer_size, SndfileHandle &fileHandle) :
-    samples(buffer_size * fileHandle.channels()), fileHandle(fileHandle), delta(1 << (16 - bits)), buffer_size(buffer_size)
+    samples(buffer_size * fileHandle.channels()), fileHandle(fileHandle), s_delta(1 << (16 - bits)), t_delta(1 << ((bits > 8 ? 16 : 8) - bits)), buffer_size(buffer_size)
 {
 }
 
@@ -18,14 +16,14 @@ const size_t &WAV::Quant::next (void)
     return frames;
 }
 
-std::vector<short> &WAV::Quant::quantitization (void)
+std::vector<short> &WAV::Quant::quantization (void)
 {
     using ld = long double;
     short *address = samples.data();
     short *end = address + frames * fileHandle.channels();
     while (address != end)
     {
-        *address = (short) std::floor(ld(*address) / ld(delta)) * delta;
+        *address = (*address / s_delta) * t_delta;
         ++address;
     }
     return samples;

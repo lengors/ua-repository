@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	cout << '\t' << sndFileIn.samplerate() << " samples per second" << endl;
 	cout << '\t' << sndFileIn.channels() << " channels" << endl;
 
-	SndfileHandle sndFileOut { argv[argc-1], SFM_WRITE, sndFileIn.format(),
+	SndfileHandle sndFileOut { argv[argc-1], SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_PCM_U8,
 	  sndFileIn.channels(), sndFileIn.samplerate() };
 	if(sndFileOut.error()) {
 		cerr << "Error: invalid output file" << endl;
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     WAV::Quant quantitizer(bits, sndFileIn);
     while (size_t frames = quantitizer.next())
-        sndFileOut.writef(quantitizer.quantitization().data(), frames);
+        sndFileOut.writef(quantitizer.quantization().data(), frames);
 
 	return 0;
 }
