@@ -30,7 +30,7 @@ std::tuple<unsigned, std::vector<std::vector<short>>> WAV::Codebook::compute (Sn
     if (blocks.size() < cluster_size)
         return { 2, std::vector<std::vector<short>>() };
 
-    std::vector<std::vector<short>> cluster(blocks.begin(), blocks.end() + cluster_size);
+    std::vector<std::vector<short>> cluster(blocks.begin(), blocks.begin() + cluster_size);
 
     return  { 0, cluster };
 }
