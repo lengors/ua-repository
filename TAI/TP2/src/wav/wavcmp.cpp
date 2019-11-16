@@ -3,7 +3,7 @@
 #include <vector>
 #include <cmath>
 
-std::optional<float> WAV::compare(const SndfileHandle &file, const SndfileHandle &original, const size_t &buffer_size)
+std::optional<float> WAV::compare(SndfileHandle &file, SndfileHandle &original, const size_t &buffer_size)
 {
     if (file.channels() != original.channels())
         return {};
