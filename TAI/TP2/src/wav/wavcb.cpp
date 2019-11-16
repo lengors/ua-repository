@@ -13,7 +13,7 @@ WAV::Codebook::Codebook (const size_t &vector_size, const size_t &cluster_size) 
 std::tuple<unsigned, std::vector<std::vector<short>>> WAV::Codebook::compute (SndfileHandle &fileHandle, const size_t &buffer_size)
 {
     if (offset == 0 || offset > vector_size)
-        return { 1, std::vector<std::vector<float>>() };
+        return { 1, std::vector<std::vector<short>>() };
 
     const size_t size = buffer_size * fileHandle.channels();
     std::vector<short> samples;
@@ -28,7 +28,7 @@ std::tuple<unsigned, std::vector<std::vector<short>>> WAV::Codebook::compute (Sn
         blocks.emplace_back(std::vector(samples.begin() + i, samples.begin() + i + vector_size));
 
     if (blocks.size() < cluster_size)
-        return { 2, std::vector<std::vector<float>>() };
+        return { 2, std::vector<std::vector<short>>() };
 
     std::vector<std::vector<short>> cluster(blocks.begin(), blocks.end() + cluster_size);
 
