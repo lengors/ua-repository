@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <tuple>
 
 namespace WAV
 {
@@ -13,7 +14,7 @@ namespace WAV
         explicit Codebook (const size_t &, const size_t &, const size_t &);
         explicit Codebook (const size_t &, const size_t &);
 
-        std::vector<std::vector<short>> compute (SndfileHandle &, const size_t & = 65536);
+        std::tuple<unsigned, std::vector<std::vector<short>>> compute (SndfileHandle &, const size_t & = 65536);
     private:
         size_t vector_size, offset, cluster_size;
     };
