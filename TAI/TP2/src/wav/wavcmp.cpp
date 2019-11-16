@@ -6,7 +6,7 @@
 std::optional<std::tuple<float, unsigned>> WAV::compare(SndfileHandle &file, SndfileHandle &original, const size_t &buffer_size)
 {
     if (file.channels() != original.channels())
-        return std::optional<std::tuple<float, unsigned>>();
+        return {};
     int max = 0;
     using ld = long double;
     ld sum = 0, diff_sum = 0;
@@ -17,7 +17,7 @@ std::optional<std::tuple<float, unsigned>> WAV::compare(SndfileHandle &file, Snd
     {
         size_t original_frames = original.readf(original_vector.data(), buffer_size);
         if (original_frames != frames)
-            return std::optional<std::tuple<float, unsigned>>();
+            return {};
         for (unsigned i = 0; i < frames * channels; ++i)
         {
             short &value = vector[i];
@@ -28,5 +28,5 @@ std::optional<std::tuple<float, unsigned>> WAV::compare(SndfileHandle &file, Snd
             diff_sum += diff * diff;
         }
     }
-    return std::optional<std::tuple<float, unsigned>>({ float(10 * std::log10(sum / diff_sum)), unsigned(max) });
+    return { 10 * std::log10(sum / diff_sum, max };
 }
