@@ -3,10 +3,11 @@
 #include <vector>
 #include <cmath>
 
-std::optional<float> WAV::compare(SndfileHandle &file, SndfileHandle &original, const size_t &buffer_size)
+std::optional<std::tuple<float, unsigned>> WAV::compare(SndfileHandle &file, SndfileHandle &original, const size_t &buffer_size)
 {
     if (file.channels() != original.channels())
         return {};
+    int max = 0;
     using ld = long double;
     ld sum = 0, diff_sum = 0;
     const int channels = file.channels();
@@ -22,9 +23,10 @@ std::optional<float> WAV::compare(SndfileHandle &file, SndfileHandle &original, 
             short &value = vector[i];
             short &original_value = original_vector[i];
             sum += original_value * original_value;
-            short diff = original_value - value;
+            int diff = int(original_value) - int(value);
+            max = std::max(max, std::abs(diff));
             diff_sum += diff * diff;
         }
     }
-    return 10 * std::log10(sum / diff_sum);
+    return { 10 * std::log10(sum / diff_sum), unsigned(max) };
 }

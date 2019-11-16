@@ -6,5 +6,5 @@
 
 namespace WAV
 {
-    std::optional<float> compare(SndfileHandle &, SndfileHandle &, const size_t & = 65536);
+    std::optional<std::tuple<float, unsigned>> compare(SndfileHandle &, SndfileHandle &, const size_t & = 65536);
 }
