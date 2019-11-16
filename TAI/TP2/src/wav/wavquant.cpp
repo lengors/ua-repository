@@ -23,7 +23,7 @@ std::vector<short> &WAV::Quant::quantization (void)
     short *end = address + frames * fileHandle.channels();
     while (address != end)
     {
-        *address = (*address / s_delta) * t_delta;
+        *address = (*address / s_delta) * s_delta;
         ++address;
     }
     return samples;
