@@ -112,7 +112,7 @@ std::tuple<unsigned, cluster_t> WAV::Codebook::compute (SndfileHandle &fileHandl
         {
             block_t &new_centroid = centroids.emplace_back(pair.first.size());
             for (unsigned i = 0; i < new_centroid.size(); ++i)
-                new_centroid[i] = std::accumulate(pair.second.begin(), pair.second.end(), 0, [&i](const auto &block) { return block[i]; }) / ld(pair.second.size());
+                new_centroid[i] = std::accumulate(pair.second.begin(), pair.second.end(), 0, [&i](const auto &result, const auto &block) { return result + block[i]; }) / ld(pair.second.size());
         }
 
         // updates keys
