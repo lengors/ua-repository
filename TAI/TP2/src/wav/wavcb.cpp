@@ -117,5 +117,5 @@ std::tuple<unsigned, cluster_t> WAV::Codebook::compute (SndfileHandle &fileHandl
         std::transform(clusters.begin(), clusters.end(), keys.begin(), key_selector);
     }
 
-    return  { 0, cluster };
+    return  { 0, centroids };
 }
