@@ -2,7 +2,28 @@
 
 #include <numeric>
 #include <algorithm>
+#include <functional>
 #include <unordered_map>
+
+namespace std
+{
+    template<typename T>
+    class hash;
+
+    template<typename T>
+    class hash<std::vector<T>>
+    {
+    public:
+        std::size_t operator() (const std::vector<T> &vector) const
+        {
+            size_t value = 0;
+            std::hash<T> hashing;
+            for (unsigned i = 0; i < vector.size(); ++i)
+                value += hashing(vector[i]) * i;
+            return value;
+        }
+    };
+}
 
 using ld = long double;
 using block_t = std::vector<ld>;
