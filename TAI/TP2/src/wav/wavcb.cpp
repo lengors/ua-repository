@@ -93,7 +93,7 @@ std::tuple<unsigned, cluster_t> WAV::Codebook::compute (SndfileHandle &fileHandl
         for (const block_t &block : blocks)
         {
             std::vector<std::pair<size_t, const block_t &>> distances(centroids.size());
-            std::transform(centroids.begin(), centroids.end(), distances.begin(), [&block](const auto &centroid) { return { square_distance(block, centroid), centroid }; });
+            std::transform(centroids.begin(), centroids.end(), distances.begin(), [&block](const auto &centroid) { return std::pair<size_t, const block_t &>(square_distance(block, centroid), centroid); });
             const block_t &centroid = std::min(distances.begin(), distances.end(), [](const auto &centroid0, const auto &centroid1) { return centroid1.first < centroid0.first ? centroid1 : centroid0; })->second;
             std::unordered_map<block_t, cluster_t>::iterator it = clusters.find(centroid);
             if (it == clusters.end())
