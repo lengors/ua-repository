@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
 
 	if(argc < 5) {
-		cerr << "Usage: wavcb <vector size> <overlap factor> <cluster size> <audio file>" << endl;
+		cerr << "Usage: wavcb <vector size> <overlap factor> <cluster size> <audio file> [max iterations]" << endl;
 		return 1;
 	}
 
