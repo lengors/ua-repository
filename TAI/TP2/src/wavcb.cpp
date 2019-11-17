@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    for (const std::vector<short> &block : cluster)
+    for (const std::vector<long double> &block : cluster)
         cout << block << endl;
 
 	return 0;
