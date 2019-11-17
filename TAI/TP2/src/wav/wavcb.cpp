@@ -80,7 +80,7 @@ std::tuple<unsigned, cluster_t> WAV::Codebook::compute (SndfileHandle &fileHandl
 
     size_t iterations = 0;
     cluster_t keys(cluster_size);
-    std::unordered_map<block_t, cluster_t> clusters;
+    std::unordered_map<block_t, cluster_t> clusters(cluster_size);
     cluster_t centroids(blocks.begin(), blocks.begin() + cluster_size);
     std::transform(clusters.begin(), clusters.end(), keys.begin(), key_selector);
 
