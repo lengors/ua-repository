@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-    size_t vector_size = std::stoi(argv[argc - 4]);
-    size_t overlap_factor = std::stoi(argv[argc - 3]);
+    size_t vector_size = std::stoi(argv[1]);
+    size_t overlap_factor = std::stoi(argv[2]);
 
     if (overlap_factor < 0 || overlap_factor >= vector_size)
     {
@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    size_t cluster_size = std::stoi(argv[argc - 2]);
+    size_t cluster_size = std::stoi(argv[3]);
 
-	SndfileHandle sndFileIn { argv[argc - 1] };
+	SndfileHandle sndFileIn { argv[4] };
 	if(sndFileIn.error()) {
 		cerr << "Error: invalid input file" << endl;
 		return 1;
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
 	WAV::Codebook codebook(vector_size, overlap_factor, cluster_size);
 
-    auto [error_code, cluster] = codebook.compute(sndFileIn, std::stoi(argv[argc - 5]));
+    auto [error_code, cluster] = codebook.compute(sndFileIn, argc == 5 ? 0 : std::stoi(argv[5]));
 
     if (error_code == 2)
     {
