@@ -31,7 +31,7 @@ WAV::Codebook::Codebook (const size_t &vector_size, const size_t &cluster_size) 
 {
 }
 
-std::tuple<unsigned, cluster> WAV::Codebook::compute (SndfileHandle &fileHandle, const size_t &max_iterations, const size_t &buffer_size)
+std::tuple<unsigned, cluster_t> WAV::Codebook::compute (SndfileHandle &fileHandle, const size_t &max_iterations, const size_t &buffer_size)
 {
     if (offset == 0 || offset > vector_size)
         return { 1, cluster_t() };
