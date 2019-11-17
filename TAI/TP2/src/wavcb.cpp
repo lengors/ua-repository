@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
 	WAV::Codebook codebook(vector_size, overlap_factor, cluster_size);
 
-    auto [error_code, cluster] = codebook.compute(sndFileIn, 1000);
+    auto [error_code, cluster] = codebook.compute(sndFileIn, std::stoi(argv[argc - 5]));
 
     if (error_code == 2)
     {
