@@ -84,8 +84,10 @@ std::tuple<unsigned, cluster_t> WAV::Codebook::compute (SndfileHandle &fileHandl
     cluster_t centroids(blocks.begin(), blocks.begin() + cluster_size);
     std::transform(clusters.begin(), clusters.end(), keys.begin(), key_selector);
 
+    std::cout << max_iterations << std::endl;
     while (keys != centroids && (!max_iterations || iterations++ < max_iterations))
     {
+        std::cout << iterations << std::endl;
         // clear clusters info
         clusters.clear();
 
