@@ -1,48 +1,27 @@
-from gen_graph import generate_graph
+from graph import Graph
+import time, itertools
 
+# tests if a given set of colors associated to vertices produces a valid arrangment
+def is_chromatic(vertices_colors, graph : Graph):
+    for vertex, neighbors in graph.items():
+        for neighbor in neighbors:
+            if neighbor != vertex and vertices_colors[vertex] == vertices_colors[neighbor]:
+                return False
+    return True
 
-def compute(graph):
-    colors = [1]
-    colors_graph = {num : 0 for num in range(len(graph))}
-    colors_graph[0] = colors[0] # initialize algorithm
-    for num, node in enumerate(graph[1:]):
-        num_node = num + 1
-        impossible_colors = list()
-        add_color = True
-        for num_sec_node, sec_node in enumerate(node):
-            if num_sec_node != num_node and colors_graph[num_sec_node] != 0 and sec_node == 1:
-                impossible_colors.append(colors_graph[num_sec_node])
-        
-        for color in colors:
-            if not color in impossible_colors:
-                colors_graph[num_node] = color
-                add_color = False
-        
-        if add_color:
-            new_color = colors[-1] + 1
-            colors.append(new_color)
-            colors_graph[num_node] = new_color
-        
+def chromatic_number(graph : Graph):
+    vertices, number = graph.vertices, None
+    for color_set in itertools.product(range(len(vertices)), repeat = len(vertices)):
+        chromatic_number = len(set(color_set))
+        if (number is None or chromatic_number < number) and is_chromatic(dict(zip(vertices, color_set)), graph):
+            number, comb = chromatic_number, list(zip(vertices, color_set))
+    return number, comb
 
-        
+def timeit(executable, *args, **kwargs):
+    start = time.time()
+    result = executable(*args, **kwargs)
+    return time.time() - start, result
 
-    return len(colors)
-
-
-
-
-if __name__ == "__main__":
-    graph = [
-        [1, 1, 0, 0],
-        [1, 1, 1, 1],
-        [0, 1, 1, 0],
-        [0, 1, 0, 1],
-        
-    ]
-
-
-    num_colors = compute(graph)
-    print(num_colors)
 
 
 ''' 
