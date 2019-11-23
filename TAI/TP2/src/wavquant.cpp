@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
 
 	if(argc < 4) {
-		cerr << "Usage: wavcp <bits> <input file> <output file>" << endl;
+		cerr << "Usage: wavquant <bits> <input file> <output file>" << endl;
 		return 1;
 	}
 

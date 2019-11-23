@@ -4,19 +4,43 @@
 
 #include <iostream>
 #include <vector>
-#include <tuple>
 
 namespace WAV
 {
+    class Codebook;
+}
+
+std::ostream &operator<< (std::ostream &, const WAV::Codebook &);
+std::istream &operator>> (std::istream &, WAV::Codebook &);
+
+namespace WAV
+{
+    using Vector = std::vector<long double>;
+    
+    long double square_distance (const Vector &, const Vector &);
+    
     class Codebook
     {
     public:
-        explicit Codebook (const size_t &, const size_t &, const size_t &);
-        explicit Codebook (const size_t &, const size_t &);
+        Codebook (const size_t &, const size_t &, const size_t &, SndfileHandle &, const size_t & = 0, const size_t & = 65536);
+        Codebook (void);
 
-        std::tuple<unsigned, std::vector<std::vector<long double>>> compute (SndfileHandle &, const size_t & = 0, const size_t & = 65536);
+        std::pair<long double, const Vector &> closest (const Vector &) const;
+        
+        const unsigned &get_error_code (void) const;
+        bool is_valid (void) const;
+
+        friend std::ostream &(::operator<<) (std::ostream &, const Codebook &);
+        friend std::istream &(::operator>>) (std::istream &, Codebook &);
+
+        std::vector<Vector>::const_iterator begin (void) const;
+        std::vector<Vector>::iterator begin (void);
+
+        std::vector<Vector>::const_iterator end (void) const;
+        std::vector<Vector>::iterator end (void);
     private:
-        size_t vector_size, offset, cluster_size;
+        std::vector<Vector> codewords;
+        unsigned valid;
     };
 }
 

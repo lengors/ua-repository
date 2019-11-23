@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
 
 	if(argc < 3) {
-		cerr << "Usage: wavcp <audio file> <original audio file>" << endl;
+		cerr << "Usage: wavcmp <audio file> <original audio file>" << endl;
 		return 1;
 	}
 

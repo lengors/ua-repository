@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
+
 #include <sndfile.hh>
-#include "wavhist.h"
+#include <wav/wavhist.hpp>
 
 using namespace std;
 

@@ -46,6 +46,9 @@
         "list": "cpp",
         "unordered_map": "cpp",
         "xhash": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "filesystem": "cpp",
+        "fstream": "cpp",
+        "mutex": "cpp"
     }
 }
