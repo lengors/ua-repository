@@ -32,7 +32,7 @@ WAVCMP:
 - original audio file: the file's name of the 
 
 WAVCB:
-./run[.sh] wavcb [vector size] [overlap factor] [cluster size] [input file|directory] [output file/directiory] [max iterations]
+./run[.sh] wavcb [vector size] [overlap factor] [cluster size] [input file|directory] [output file|directiory] [max iterations]
 - vector size: the size of the vector (number of samples)
 - overlap factor: how many samples are shared between vectors
 - cluster size: how many clusters are generated
@@ -47,24 +47,49 @@ WAVFIND:
 - input file: audio file to classify
 - directory: location of codebooks used in the classification
 
-
-FCM:
-./run[.sh] fcm [k] [alpha] [text='test.txt'] [model='model.mdl'] [-p]
-- k: context's size
-- alpha: alpha
-- text: the file's name of the text used to create the model
-- model: the file's name of the file where the program stores the model
-- option [-p]: prints data of the model and its entropy onto the standard output
-
-
 ## RESET ##
 ./reset[.sh]
 
 ## How to run a concrete example ##
+0. Verify the requirements above!
+apt install libsndfile-dev
+
 1. First thing, execute 
 
 	./build.sh
 
-This will build FCM, Generator and Comparator.
+This will build all of the applications.
 
-2. 
+2. Run WAVHIST
+
+	./run.sh wavhist example/sample.wav 0
+
+This will read the sample.wav and print out all of the data points in channel 0.
+
+3. Run WAVQUANT
+	
+	./run.sh wavquant 3 sample.wav sample3.wav
+
+WAVQUANT will quantify the music sample.wav down to 3bits. 
+
+Returns the Nº of frames, sample rate and channels of the input file.
+
+4. Run WAVCMP
+
+	./run[.sh] wavcmp example/s3.wav example/sample.wav
+
+This will calculate the SNR and Maximum per sample absolute error of the original with the quantified file. 
+
+Returns the Nº of frames, sample rate, Nº of channels, Signal Noise Ratio and Maximum per sample absolute error.
+
+5. Run WAVCB
+
+	./run.sh wavcb 20 10 10 example/sample.wav example/codebooks 10
+
+(Descriptions)
+
+6. Run WAVFIND
+	
+	./run.sh wavfind 20 10 sample.wav example/
+
+Descriptions:
