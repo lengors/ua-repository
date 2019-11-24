@@ -73,6 +73,24 @@ WAV::Codebook::Codebook (const size_t &vector_size, const size_t &overlap_factor
         return;
     }
 
+    // populates initial codewords with the first k different blocks
+    codewords.clear();
+    codewords.reserve(cluster_size);
+    cluster_t::iterator it = blocks.begin();
+    while (codewords.size() != cluster_size && it != blocks.end())
+    {
+        bool found = false;
+        for (const auto &block : codewords)
+            if (block == *it)
+            {
+                found = true;
+                break;
+            }
+        if (!found)
+            codewords.emplace_back(*it);
+        ++it;
+    }
+
     valid = 0;
     if (blocks.size() == cluster_size)
         return;
@@ -80,7 +98,6 @@ WAV::Codebook::Codebook (const size_t &vector_size, const size_t &overlap_factor
     size_t iterations = 0;
     cluster_t keys(cluster_size);
     std::unordered_map<WAV::Vector, cluster_t> clusters(cluster_size);
-    codewords = cluster_t(blocks.begin(), blocks.begin() + cluster_size);
     std::transform(clusters.begin(), clusters.end(), keys.begin(), key_selector);
 
     while (keys != codewords && (!max_iterations || iterations++ < max_iterations))
@@ -102,6 +119,8 @@ WAV::Codebook::Codebook (const size_t &vector_size, const size_t &overlap_factor
             else
                 it->second.emplace_back(block);
         }
+
+        // std::cout << clusters.size() << std::endl;
 
         // clear centroids info
         codewords.clear();
@@ -149,6 +168,11 @@ const unsigned &WAV::Codebook::get_error_code (void) const
 bool WAV::Codebook::is_valid (void) const
 {
     return !valid;
+}
+
+size_t WAV::Codebook::size (void) const
+{
+    return codewords.size();
 }
 
 std::vector<WAV::Vector>::const_iterator WAV::Codebook::begin (void) const
