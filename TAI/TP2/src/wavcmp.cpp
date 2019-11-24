@@ -38,8 +38,8 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	if((originalSndFile.format() & SF_FORMAT_SUBMASK) != SF_FORMAT_PCM_16) {
-		cerr << "Error: original audio file is not in PCM_16 format" << endl;
+	if((originalSndFile.format() & SF_FORMAT_SUBMASK) != SF_FORMAT_PCM_16 && (originalSndFile.format() & SF_FORMAT_SUBMASK) != SF_FORMAT_PCM_U8) {
+		cerr << "Error: original audio file is not in PCM_16 format or PCM_U8 format" << endl;
 		return 1;
 	}
 

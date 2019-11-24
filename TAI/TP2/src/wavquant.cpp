@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	if((sndFileIn.format() & SF_FORMAT_SUBMASK) != SF_FORMAT_PCM_16) {
-		cerr << "Error: file is not in PCM_16 format" << endl;
+	if((sndFileIn.format() & SF_FORMAT_SUBMASK) != SF_FORMAT_PCM_16 && (sndFileIn.format() & SF_FORMAT_SUBMASK) != SF_FORMAT_PCM_U8) {
+		cerr << "Error: file is not in PCM_16 or PCM_U8 format" << endl;
 		return 1;
 	}
 

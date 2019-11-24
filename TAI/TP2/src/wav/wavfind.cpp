@@ -10,7 +10,7 @@ long double calculate_error (const std::vector<WAV::Vector> &blocks, const WAV::
     long double error = 0;
     for (const WAV::Vector &block : blocks)
         error += codebook.closest(block).first;
-    return error / codebook.size();
+    return error;
 }
 
 WAV::Codebook &WAV::Find::add_codebook (void)
@@ -51,6 +51,14 @@ std::optional<WAV::Find::Result> WAV::Find::find (const size_t &vector_size, con
             result.index = i;
             result.error = error;
             result.codebook = codebook;
+        }
+        if (i == 4 || i == 5)
+        {
+
+            std::cout << error << std::endl;
+            std::cout << codebook.size() << std::endl;
+            std::cout << (error / codebook.size()) << std::endl;
+
         }
     }
 

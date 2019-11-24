@@ -41,6 +41,7 @@ void process_file (const size_t vector_size, const size_t overlap_factor, const 
 	}
 
 	WAV::Codebook codebook(vector_size, overlap_factor, cluster_size, sndFileIn, max_iterations);
+	std::cout << codebook.size() << std::endl;
     
 	if (codebook.get_error_code() == 2)
     {
