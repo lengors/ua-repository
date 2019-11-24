@@ -72,7 +72,8 @@ project "wavcb"
     {
         "wav",
         "sndfile",
-        "pthread"
+        "pthread",
+        "stdc++fs"
     }
 
     filter "system:windows"
@@ -204,7 +205,8 @@ project "wavfind"
     links
     {
         "wav",
-        "sndfile"
+        "sndfile",
+        "stdc++fs"
     }
     
     filter "system:windows"

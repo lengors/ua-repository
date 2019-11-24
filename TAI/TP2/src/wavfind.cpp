@@ -1,9 +1,11 @@
 #include <fstream>
 #include <iostream>
-#include <filesystem>
+#include <experimental/filesystem>
+
 #include <wav/wavfind.hpp>
 
 using namespace std;
+namespace fs = std::experimental::filesystem;
 
 int main (int argc, char *argv[])
 {
@@ -37,7 +39,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 
-	if (!std::filesystem::exists(argv[4]))
+	if (!fs::exists(argv[4]))
 	{
 		cerr << "Error: specified directory doesn't exist" << endl;
 		return 1;
@@ -46,7 +48,7 @@ int main (int argc, char *argv[])
     WAV::Find finder;
     std::vector<std::string> files;
 
-    for (const auto &file : std::filesystem::directory_iterator(argv[4]))
+    for (const auto &file : fs::directory_iterator(argv[4]))
     {
         WAV::Codebook &codebook = finder.add_codebook();
         files.emplace_back(file.path().c_str());

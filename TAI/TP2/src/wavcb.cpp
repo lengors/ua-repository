@@ -3,16 +3,17 @@
 #include <future>
 #include <fstream>
 #include <iostream>
-#include <filesystem>
+#include <experimental/filesystem>
 
 #include <sndfile.hh>
 #include <wav/wavcb.hpp>
 
 using namespace std;
+namespace fs = std::experimental::filesystem;
 
 static std::mutex m_Mutex;
 
-void process_file (const size_t vector_size, const size_t overlap_factor, const size_t cluster_size, const std::filesystem::path input, const std::filesystem::path output, const size_t max_iterations)
+void process_file (const size_t vector_size, const size_t overlap_factor, const size_t cluster_size, const fs::path input, const fs::path output, const size_t max_iterations)
 {
 	SndfileHandle sndFileIn { input.c_str() };
 
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
 
     size_t cluster_size = std::stoi(argv[3]);
 
-	if (!std::filesystem::exists(argv[4]))
+	if (!fs::exists(argv[4]))
 	{
 		cerr << "Error: specified path doesn't exist" << endl;
 		return 1;
@@ -85,19 +86,19 @@ int main(int argc, char *argv[])
 
 	size_t max_iterations = argc == 6 ? 0 : std::stoi(argv[6]);
 
-	if (std::filesystem::is_directory(argv[4]))
+	if (fs::is_directory(argv[4]))
 	{
-		if (std::filesystem::exists(argv[5]) && !std::filesystem::is_directory(argv[5]))
+		if (fs::exists(argv[5]) && !fs::is_directory(argv[5]))
 		{
 			cerr << "Error: specified output path is not a directory" << endl;
 			return 1;
 		}
-		else if (!std::filesystem::exists(argv[5]))
-			std::filesystem::create_directory(argv[5]);
-        std::vector<std::pair<std::filesystem::path, std::filesystem::path>> paths;
-		for (const auto &file : std::filesystem::directory_iterator(argv[4]))
+		else if (!fs::exists(argv[5]))
+			fs::create_directory(argv[5]);
+        std::vector<std::pair<fs::path, fs::path>> paths;
+		for (const auto &file : fs::directory_iterator(argv[4]))
 		{
-			std::filesystem::path output_path = argv[5];
+			fs::path output_path = argv[5];
 			output_path /= file.path().filename();
 			output_path.replace_extension(".cdb");
 			paths.emplace_back(file.path(), output_path);
