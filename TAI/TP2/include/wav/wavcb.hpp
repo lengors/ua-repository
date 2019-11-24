@@ -29,6 +29,7 @@ namespace WAV
         
         const unsigned &get_error_code (void) const;
         bool is_valid (void) const;
+        size_t size (void) const;
 
         friend std::ostream &(::operator<<) (std::ostream &, const Codebook &);
         friend std::istream &(::operator>>) (std::istream &, Codebook &);

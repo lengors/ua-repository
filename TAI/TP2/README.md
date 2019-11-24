@@ -18,34 +18,34 @@ apt install libsndfile-dev
 WAVHIST:
 ./run[.sh] wavhist [input file] [channel]
 - input file: the file's name of the song
-- channel: selecting a channel which the file supports
+- channel (optional): selecting a channel which the file supports
 
 WAVQUANT:
 ./run[.sh] wavquant [bits] [input file] [output file]
-- bits:
-- input file:
-- output file:
+- bits: number of bits per sample (this isn't necessarily the actual bits per sample, rather tells how many possible values a sample can have, for instance 3 bits equals 8 different possible values) of the output file
+- input file: the file's name of the song to quantize
+- output file: the file's name of the quantized file
 
 WAVCMP:
 ./run[.sh] wavcmp [audio file] [original audio file]
-- audio file:
-- original audio file:
+- audio file: the file's name of the quantized file
+- original audio file: the file's name of the 
 
 WAVCB:
 ./run[.sh] wavcb [vector size] [overlap factor] [cluster size] [input file|directory] [output file/directiory] [max iterations]
-- vector size:
-- overlap factor:
-- cluster size:
-- input (file|directory):
-- output (file|directory):
-- max iterations:
+- vector size: the size of the vector (number of samples)
+- overlap factor: how many samples are shared between vectors
+- cluster size: how many clusters are generated
+- input (file|directory): path of audio file(s) to generate codebooks about
+- output (file|directory): path of file(s) of the generated codebooks
+- max iterations (optional): maximum number of iterations of the k-means algorithm
 
 WAVFIND:
 ./run[.sh] wavfind [vector size] [overlap factor] [input file] [directiory]
-- vector size:
-- overlap factor:
-- input file:
-- directory:
+- vector size: the size of the vector (number of samples), it should be the same as the one used in wavcb
+- overlap factor: how many samples are shared between vectors, it should also be the same as the one used in wavcb
+- input file: audio file to classify
+- directory: location of codebooks used in the classification
 
 
 FCM:

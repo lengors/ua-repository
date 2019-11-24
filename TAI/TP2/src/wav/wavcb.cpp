@@ -151,6 +151,11 @@ bool WAV::Codebook::is_valid (void) const
     return !valid;
 }
 
+size_t WAV::Codebook::size (void) const
+{
+    return codewords.size();
+}
+
 std::vector<WAV::Vector>::const_iterator WAV::Codebook::begin (void) const
 {
     return codewords.begin();
