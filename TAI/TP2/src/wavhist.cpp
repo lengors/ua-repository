@@ -10,13 +10,13 @@ constexpr size_t FRAMES_BUFFER_SIZE = 65536; // Buffer for reading frames
 
 int main (int argc, char *argv[])
 {
-	if(argc < 3)
+	if(argc < 2)
 	{
-		cerr << "Usage: wavhist <input file> <channel>" << endl;
+		cerr << "Usage: wavhist <input file> [channel]" << endl;
 		return 1;
 	}
 
-	SndfileHandle sndFile { argv[argc-2] };
+	SndfileHandle sndFile { argv[1] };
 	if(sndFile.error()) {
 		cerr << "Error: invalid input file" << endl;
 		return 1;
@@ -32,10 +32,14 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 
-	int channel { stoi(argv[argc-1]) };
-	if(channel >= sndFile.channels()) {
-		cerr << "Error: invalid channel requested" << endl;
-		return 1;
+	int channel = -1;
+	if (argc > 2)
+	{
+		channel = stoi(argv[2]);
+		if(channel >= sndFile.channels()) {
+			cerr << "Error: invalid channel requested" << endl;
+			return 1;
+		}
 	}
 
 	size_t nFrames;
@@ -46,7 +50,11 @@ int main (int argc, char *argv[])
 		hist.update(samples);
 	}
 
-	hist.dump(channel);
+	if (argc > 2)
+		hist.dump(channel);
+	else
+		hist.dump_average();
+	
 	return 0;
 }
 

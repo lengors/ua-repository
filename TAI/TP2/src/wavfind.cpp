@@ -57,7 +57,7 @@ int main (int argc, char *argv[])
     auto found = finder.find(vector_size, overlap_factor, sndFileIn);
 
     if (found.has_value())
-        std::cout << "Original: " << files[found.value().first] << std::endl;
+        std::cout << "Original: " << files[found.value().index] << std::endl;
     else
     {
         cerr << "Error: an error occurred during processing" << endl;

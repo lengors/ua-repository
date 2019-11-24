@@ -1,5 +1,6 @@
 #include <wav/wavfind.hpp>
 
+#include <iostream>
 #include <algorithm>
 
 using ld = long double;
@@ -17,7 +18,7 @@ WAV::Codebook &WAV::Find::add_codebook (void)
     return codebooks.emplace_back();
 }
 
-std::optional<std::pair<unsigned, WAV::Codebook &>> WAV::Find::find (const size_t &vector_size, const size_t &overlap_factor, SndfileHandle &sndfile_handle, const size_t &buffer_size)
+std::optional<WAV::Find::Result> WAV::Find::find (const size_t &vector_size, const size_t &overlap_factor, SndfileHandle &sndfile_handle, const size_t &buffer_size)
 {
     const size_t offset = vector_size - overlap_factor;
 
@@ -39,17 +40,23 @@ std::optional<std::pair<unsigned, WAV::Codebook &>> WAV::Find::find (const size_
         std::transform(samples.begin() + i, samples.begin() + i + vector_size, block.begin(), [](const auto &value) { return ld(value); });
     }
 
-    std::pair<unsigned, Codebook &> result(0, codebooks[0]);
-    long double min_error = calculate_error(blocks, result.second);
+    Result result{ 0, 0, codebooks[0] };
+    result.error = calculate_error(blocks, result.codebook);
     for (unsigned i = 1; i < codebooks.size(); ++i)
     {
         Codebook &codebook = codebooks[i];
         const long double error = calculate_error(blocks, codebook);
-        if (error < min_error)
+        if (error < result.error)
         {
-            min_error = error;
-            result.first = i;
-            result.second = codebook;
+            std::cout << "SWAP: (" << result.index << ", " << result.error << ") and (" << i << ", " << error << ")" << std::endl;
+
+            result.index = i;
+            result.error = error;
+            result.codebook = codebook;
+        }
+        else
+        {
+            std::cout << "NON-SWAP: (" << result.index << ", " << result.error << ") and (" << i << ", " << error << ")" << std::endl;
         }
     }
 
