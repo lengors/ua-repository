@@ -48,15 +48,9 @@ std::optional<WAV::Find::Result> WAV::Find::find (const size_t &vector_size, con
         const long double error = calculate_error(blocks, codebook);
         if (error < result.error)
         {
-            std::cout << "SWAP: (" << result.index << ", " << result.error << ") and (" << i << ", " << error << ")" << std::endl;
-
             result.index = i;
             result.error = error;
             result.codebook = codebook;
-        }
-        else
-        {
-            std::cout << "NON-SWAP: (" << result.index << ", " << result.error << ") and (" << i << ", " << error << ")" << std::endl;
         }
     }
 

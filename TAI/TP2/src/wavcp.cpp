@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 	while (nFrames = sndFileIn.readf(buffer, FRAMES_BUFFER_SIZE))
 		samples.insert(samples.end(), buffer, buffer + nFrames * sndFileIn.channels());
 
-	number_frames = number_frames == -1 ? samples.size() / sndFileIn.channels() - offset : std::max(size_t(number_frames), samples.size() / sndFileIn.channels() - offset);
+	number_frames = number_frames == -1 ? samples.size() / sndFileIn.channels() - offset : std::min(size_t(number_frames), samples.size() / sndFileIn.channels() - offset);
 	sndFileOut.writef(samples.data() + offset * sndFileIn.channels(), number_frames);
 	return 0;
 }
