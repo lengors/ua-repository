@@ -21,8 +21,8 @@ def highest_frequency(od):
 def indexit(tokenizer, filenames, store_positions = False, calculate_tfidf = False, memory_usage = 20):
     indexer = Indexer(tokenizer, 'indexer', store_positions = store_positions, max_memory_usage = memory_usage)
     for filename in filenames:
-        corpus_reader = CorpusReader(filename)
-        indexer.index(corpus_reader)
+        indexer.index(CorpusReader(filename))
+    print(calculate_tfidf)
     indexer.merge(calculate_tfidf)
     return indexer
 

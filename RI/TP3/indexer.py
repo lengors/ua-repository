@@ -8,7 +8,7 @@ class Indexer:
         def __init__(self, tokenizer : Tokenizer, index_folder : str, max_memory_usage : float = 20):
             self.terms = {}
             self.segments = []
-            self.documents = set()
+            self.documents = {}
             self.__disposed = False
             self.tokenizer = tokenizer
             self.index_folder = index_folder
@@ -46,7 +46,7 @@ class Indexer:
         def index(self, corpus_reader : CorpusReader):
             for pmid, document in corpus_reader.items():
                 self.update(pmid, document)
-                self.documents.add(pmid)
+                self.documents.setdefault(pmid, 0)
                 if self.process.memory_percent() >= self.max_memory_usage:
                     self.dispatch()
 
@@ -93,7 +93,6 @@ class Indexer:
 
                 # else
                 else:
-
                     # stores stringified version of term (and associated data)
                     output.append(write_func(cline))
 
@@ -121,6 +120,16 @@ class Indexer:
                 self._parse_function = self._parse_ranked
                 # self._merge_function = self._merge_ranked
 
+                for document, length in self.documents.items():
+                    self.documents[document] = math.sqrt(length)
+
+                for _, _, segment in self.segments:
+                    self.__load_segment(segment)
+                    for key, (idf, docs) in self.terms.items():
+                        for pmid, (weight, extra) in docs.items():
+                            docs[pmid] = (weight / self.documents[pmid], extra)
+                    self.__save_segment(segment)
+
         def sort(self):
             self.terms = collections.OrderedDict(sorted(self.terms.items()))
 
@@ -129,6 +138,9 @@ class Indexer:
             for i, term in enumerate(self.tokenizer.tokenize(document)):
                 documents = terms.setdefault(term, {})
                 documents[pmid] = documents.get(pmid, 0) + 1
+
+        def _get_count(self, value):
+            return value
 
         def _merge_unranked(self, docs0 : dict, docs1 : dict):
             return { key : docs0.get(key, 0) + docs1.get(key, 0) for key in docs0.keys() | docs1.keys() }
@@ -145,8 +157,10 @@ class Indexer:
         def _rank(self, line : tuple):
             term, documents = line
             idf = math.log10(len(self.documents) / len(documents))
-            for pmid, count in documents.items():
-                documents[pmid] = ((1 + math.log10(count)) * idf, count)
+            for pmid, extra in documents.items():
+                weight = (1 + math.log10(self._get_count(extra))) * idf
+                self.documents[pmid] += weight * weight
+                documents[pmid] = (weight, extra)
             return (term, (idf, documents))
 
         def _write_ranked(self, line : tuple):
@@ -192,6 +206,10 @@ class Indexer:
             with open(segment, 'r') as fin:
                 self.terms = collections.OrderedDict([ self._parse_function(line) for line in fin ])
             return self.terms
+
+        def __save_segment(self, segment):
+            with open(segment, 'w') as fout:
+                fout.write(self.__str__())
 
         def __write_forced_ranked(self, line : tuple):
             return self._write_ranked(self._rank(line))
@@ -266,6 +284,9 @@ class Indexer:
                 positions = documents.setdefault(pmid, [])
                 positions.append(i)
 
+        def _get_count(self, value):
+            return len(value)
+
         def _merge_unranked(self, docs0 : dict, docs1 : dict):
             return { key : sorted(docs0.get(key, []) + docs1.get(key, [])) for key in docs0.keys() | docs1.keys() }
 
@@ -277,13 +298,6 @@ class Indexer:
         def _parse_unranked(self, line : str):
             term, *docs = line.split(';')
             return (term, { pmid : [ int(position) for position in positions.split(',') ] for pmid, positions in [ doc.split(':') for doc in docs ] })
-
-        def _rank(self, line : tuple):
-            term, documents = line
-            idf = math.log10(len(self.documents) / len(documents))
-            for pmid, positions in documents.items():
-                documents[pmid] = ((1 + math.log10(len(positions))) * idf, positions)
-            return (term, (idf, documents))
 
         def _write_ranked(self, line : tuple):
             return '{}:{};{}'.format(line[0], line[1][0], ';'.join([ '{}:{}:{}'.format(pmid, weight, ','.join([ str(position) for position in positions ])) for pmid, (weight, positions) in line[1][1].items() ]))
