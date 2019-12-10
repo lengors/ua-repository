@@ -1,8 +1,10 @@
 from tokenization import tokenizer, simple_tokenizer, Tokenizer
 from corpus_reader import CorpusReader
 from indexer import Indexer
+from index import Index
 import argparse, rules
 import os, time, utils
+import shutil
 
 '''
     Trabalho realizado por : 
@@ -19,12 +21,12 @@ def highest_frequency(od):
     return [ term for term, _ in sorted(od.items(), key = lambda x: len(x[1][1]), reverse = True)[:10] ]
 
 def indexit(tokenizer, filenames, store_positions = False, calculate_tfidf = False, memory_usage = 20):
-    indexer = Indexer(tokenizer, 'indexer', store_positions = store_positions, max_memory_usage = memory_usage)
+    index = Index(tokenizer, store_positions)
+    indexer = Indexer(index, 'index', max_memory_usage = memory_usage)
     for filename in filenames:
         indexer.index(CorpusReader(filename))
-    print(calculate_tfidf)
     indexer.merge(calculate_tfidf)
-    return indexer
+    return index
 
 def main():
     parser.add_argument('--store_positions', action='store_true', help = 'Indicates if indexer stores positions of terms or not')
@@ -36,15 +38,15 @@ def main():
     if files_exist and stopwords_exist:
         used_tokenizer = tokenizers[args.tokenizer]
         if used_tokenizer.has_rule(rules.stopping):
-            used_tokenizer.make_rule(rules.stopping, args.stopwords)    
-        (indexer, max_memory) , interval = utils.timeit(utils.profileit,
+            used_tokenizer.make_rule(rules.stopping, args.stopwords)
+        (index, max_memory) , interval = utils.timeit(utils.profileit,
             indexit, used_tokenizer, filenames, store_positions = args.store_positions, calculate_tfidf = args.tfidf, memory_usage = args.memory)
-        indexer.save(args.output)
+        index.save(args.output)
         print('Answers:')
         print('Time taken: {}s'.format(interval))
         print('Max memory usage: {}'.format(utils.sizeof_fmt(max_memory)))
-        print('Disk size: {}'.format(utils.sizeof_fmt(os.path.getsize(args.output))))
-        del indexer
+        print('Disk size: {}'.format(utils.sizeof_fmt(os.path.getsize('{}.csv'.format(args.output)))))
+        shutil.rmtree('index')
     else:
         if not files_exist:
             print('Error: File or directory (with files) to index doesn\'t exist!')
