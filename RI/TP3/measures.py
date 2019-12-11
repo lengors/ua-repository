@@ -4,10 +4,18 @@ from index import Index
 import math
 
 def precision(documents, relevance):
-    pass
+    relevant = 0
+    for document in documents:
+        relevant += 1 if document in relevance else 0
+
+    return relevant / len(documents)
 
 def recall(documents, relevance):
-    pass
+    relevant = 0
+    for document in documents:
+        relevant += 1 if document in relevance else 0
+
+    return relevant / len(relevance)
 
 def fmeasure(P, R):
     return 2 * P * R / (R + P)
