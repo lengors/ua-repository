@@ -310,11 +310,11 @@ class Index:
             return index
 
     @staticmethod
-    def segment_on_load(output, segmentation = 10, folder = 'index\\segments', tokenizer = None):
+    def segment_on_load(output, size = 100 * 1024 * 1024, folder = 'index\\segments', tokenizer = None):
         if type(output) == str:
             with open('{}.csv'.format(output), 'r') as fin_data:
                 with open('{}.idx'.format(output), 'rb') as fin_state:
-                    return Index.segment_on_load([ fin_data, fin_state ], segmentation, folder, tokenizer)
+                    return Index.segment_on_load([ fin_data, fin_state ], size, folder, tokenizer)
         else:
             fin_data, fin_state = output
             index = Index(tokenizer, None, None)
@@ -328,11 +328,12 @@ class Index:
 
             index.__segments = list()
 
-            size = math.ceil(os.stat(fin_data.fileno()).st_size / segmentation)
+            segmentation = math.ceil(os.stat(fin_data.fileno()).st_size / size)
             for i in range(segmentation):
                 segment = fin_data.readlines(size)
-                filename = os.path.join(folder, 'segment-{}'.format(len(os.listdir(folder))))
-                with open(filename, 'w') as fout:
-                    fout.write(''.join(segment))
-                index.__segments.append((index.header(segment[0])[0], index.header(segment[-1])[0], filename, len(segment)))
+                if len(segment) > 0:
+                    filename = os.path.join(folder, 'segment-{}'.format(len(os.listdir(folder))))
+                    with open(filename, 'w') as fout:
+                        fout.write(''.join(segment))
+                    index.__segments.append((index.header(segment[0])[0], index.header(segment[-1])[0], filename, len(segment)))
             return index

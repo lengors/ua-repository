@@ -16,7 +16,7 @@ class CorpusReader:
                     pmid = line[5:].strip()
                     current, read = str(), False
                 else:
-                    read = line.startswith('TI')
+                    read = line.startswith('TI') or line.startswith('AB')
                     if read:
                         current += line[5:]
             elif read:
