@@ -30,6 +30,7 @@ if __name__ == '__main__':
     for i in [ 10, 20, 50 ]:
         print('Top-{}'.format(i))
         print(formatter_header.format('', 'Precision', 'Recall', 'F-Measure', 'Avg. Precision', 'NDCG'))
+        ap = ar = af = aa = an = 0
         for query, ranking in sorted(queries.items(), key = lambda item: int(item[0][0])):
             relevance = relevances[query[0]]
             documents = collections.OrderedDict(itertools.islice(ranking.items(), i))
@@ -38,5 +39,19 @@ if __name__ == '__main__':
             f = fmeasure(p, r)
             a = averagep(documents, relevance)
             n = ndcg(documents, relevance)
+
+            ap += p
+            ar += r
+            af += f
+            aa += a
+            an += n
+
             print(formatter_body.format(int(query[0]), p, r, f, a, n))
+
+        print()
+        print('Top-{} - Average'.format(i))
+        print(formatter_header.format('', 'Precision', 'Recall', 'F-Measure', 'Avg. Precision', 'NDCG'))
+        print(formatter_body.format(int(query[0]), ap / len(queries), ar / len(queries), af / len(queries), aa / len(queries), an / len(queries)))
+        print()
+
     shutil.rmtree('index')
