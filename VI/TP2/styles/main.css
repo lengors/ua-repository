@@ -1,0 +1,46 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+body::after {
+    content: "";
+    background-image: url("/content/background.jpg");
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.75;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: -1;
+}
+
+.menu {
+    width: 100%;
+    max-width: 520px;
+    padding: 60px;
+    margin: auto;
+    margin-bottom: 0;
+}
+
+.centered-container {
+    border-radius: 15px;
+}
+
+.logo {
+    border-radius: 4px;
+}

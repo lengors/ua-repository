@@ -31,7 +31,7 @@ class LogarithmicCounter(Counter):
 if __name__ == '__main__':
     total = 0
     counters = []
-    amount, count = 10000, 10000
+    amount, count = 10000, 100
     counter = LogarithmicCounter(2)
     for i in range(amount):
         counter.reset()

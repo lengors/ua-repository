@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm -rf bin int config && rm -f *.sln 
+rm -rf bin int config && rm -f Makefile
