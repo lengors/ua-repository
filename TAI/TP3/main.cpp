@@ -14,7 +14,7 @@ int main(int args, char *argv[]){
 
     NCD* ncd = new NCD();
 
-    float value = ncd->compute(img_name, img_name);
+    float value = ncd->compute(img_name, "02.pgm");
     std::cout << value << std::endl;
     
     return 0;
