@@ -1,346 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <title>Data Visualization</title>
-    <link rel="icon" href="/content/logo.png" style="border-radius: 50%;">
+    <head>
+        <title>Data Visualization</title>
+        <link rel="icon" href="/content/logo.png" style="border-radius: 50%;">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- BOOTSTRAP START -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- BOOTSTRAP END -->
+        <!-- BOOTSTRAP START -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!-- BOOTSTRAP END -->
 
-    <script type="text/javascript" src="https://d3js.org/d3.v5.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <link rel="stylesheet" type="text/css" href="/styles/main.css">
+        <link rel="stylesheet" type="text/css" href="/styles/extended.css">
 
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
+        <script type="text/javascript" src="https://d3js.org/d3.v5.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-        body {
-            display: -ms-flexbox;
-            display: flex;
-            flex-wrap: wrap;
-            -ms-flex-wrap: wrap;
-            -ms-flex-align: center;
-            align-items: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
-        }
-
-        body::after {
-            content: "";
-            background-image: url("/content/background.jpg");
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            background-size: cover;
-            opacity: 0.75;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            position: fixed;
-            z-index: -1;
-        }
-
-        .menu {
-            width: 100%;
-            max-width: 520px;
-            padding: 60px;
-            margin: auto;
-            margin-bottom: 0;
-        }
-
-        .centered-container {
-            border-radius: 15px;
-        }
-
-        .logo {
-            border-radius: 4px;
-        }
-
-        .footer {
-            height: 0;
-            width: 100%;
-            flex-basis: 100%;
-            margin-bottom: 40px;
-        }
-
-        .chart .bar-chart {
-            vertical-align: top;
-            width: 55%;
-        }
-
-        .chart .text {
-            font-size: 12px;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .chart .title {
-            font-weight: bold;
-            display: block;
-            max-width: 55%;
-            text-align: justify;
-        }
-
-        .chart .labels {
-            width: calc(45% - 35px);
-            display: inline-block;
-            margin-left: 30px;
-        }
-
-        .chart .labels .label-container {
-            display: inline-block;
-            width: 100%;
-        }
-
-        .chart .labels .label-container .circle {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .chart .labels .label-container .label {
-            display: inline-block;
-            color: #222;
-            line-height: 12px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: calc(100% - 23px);
-            white-space: nowrap;
-            margin-left: 5px;
-        }
-
-        .bar-chart {
-            height: 25px;
-        }
-    </style>
-</head>
-
-<body class="bg-light">
-    <div class="menu bg-light centered-container">
-        <div class="pt-2 pb-4 text-center">
-            <img class="logo d-block mx-auto mb-4" src="/content/logo.png" alt="Understand Your Role" width="96"
-                height="72">
-            <h2>Understand Your Role</h2>
-        </div>
-        <div class="row justify-content-center">
-            <div id="role" class="bg-light"></div>
-        </div>
-        <div id="hiredTo" class="chart mb-4">
-            <span class="text title">
-                Hired to do data visualization?
-            </span>
-            <svg class="bar-chart"></svg>
-            <div class="labels"></div>
-        </div>
-        <div id="edv" class="chart">
-            <span class="text title">
-                Do you do more or less data visualization than you expected?
-            </span>
-            <svg class="bar-chart"></svg>
-            <div class="labels"></div>
-        </div>
-    </div>
-    <div class="footer"></div>
-
-    <!-- BOOTSTRAP START -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-    <!-- BOOTSTRAP END -->
-
-    <script type="text/javascript">
-        var colors = {
-            hiredTo: {
-                'Data visualization is only part of my job': 'dodgerblue',
-                'Hired to do data visualization': 'orange'
-            },
-            edv: {
-                'More': 'dodgerblue',
-                'Less': 'seagreen',
-                'Expected': 'coral'
+        <style>
+            .chart .bar-chart {
+                vertical-align: top;
+                width: 55%;
             }
-        };
+            
+            .chart .text {
+                font-size: 12px;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            
+            .chart .title {
+                font-weight: bold;
+                display: block;
+                max-width: 55%;
+                text-align: justify;
+            }
+            
+            .chart .labels {
+                width: calc(45% - 35px);
+                display: inline-block;
+                margin-left: 30px;
+            }
+            
+            .chart .labels .label-container {
+                display: inline-block;
+                width: 100%;
+            }
+            
+            .chart .labels .label-container .circle {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            
+            .chart .labels .label-container .label {
+                display: inline-block;
+                color: #222;
+                line-height: 12px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: calc(100% - 23px);
+                white-space: nowrap;
+                margin-left: 5px;
+            }
+            
+            .bar-chart {
+                height: 25px;
+            }
+        </style>
+    </head>
 
-        var sortingOrder = {
-            hiredTo: ['Data visualization is only part of my job', 'Hired to do data visualization'],
-            edv: ['Less', 'Expected', 'More']
-        }
+    <body class="bg-light">
+        <div class="menu bg-light centered-container">
+            <div class="pt-2 pb-4 text-center">
+                <img class="logo d-block mx-auto mb-4" src="/content/logo.png" alt="Understand Your Role" width="96" height="72">
+                <h2>Understand Your Role</h2>
+            </div>
+            <div class="row justify-content-center">
+                <div id="role" class="bg-light"></div>
+            </div>
+            <div id="hiredTo" class="chart mb-4">
+                <span class="text title">Hired to do data visualization?</span>
+                <svg class="bar-chart"></svg>
+                <div class="labels"></div>
+            </div>
+            <div id="edv" class="chart">
+                <span class="text title">Do you do more or less data visualization than you expected?</span>
+                <svg class="bar-chart"></svg>
+                <div class="labels"></div>
+            </div>
+        </div>
+        <div class="footer"></div>
 
-        function updateBarChart(barChartId, barChartData) {
-            let x = 0;
-            let dataset = new Array();
-            let thisColors = colors[barChartId];
-            let entries = Object.entries(barChartData);
-            let thisSortingOrder = sortingOrder[barChartId];
-            entries.sort((first, second) => thisSortingOrder.indexOf(first[0]) - thisSortingOrder.indexOf(second[0]));
-            let sum = entries.reduce((total, entry) => total + entry[1], 0);
+        <!-- BOOTSTRAP START -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <!-- BOOTSTRAP END -->
 
-            for (let [key, value] of entries) {
-                let width = value / sum;
-                dataset.push({
-                    key: key,
-                    x: x,
-                    width: width
-                });
-                x += width;
+        <script type="text/javascript">
+            var colors = {
+                hiredTo: {
+                    'Data visualization is only part of my job': 'dodgerblue',
+                    'Hired to do data visualization': 'orange'
+                },
+                edv: {
+                    'More': 'dodgerblue',
+                    'Less': 'seagreen',
+                    'Expected': 'coral'
+                }
+            };
+
+            var sortingOrder = {
+                hiredTo: ['Data visualization is only part of my job', 'Hired to do data visualization'],
+                edv: ['Less', 'Expected', 'More']
             }
 
-            let barChart = d3.select(`#${barChartId}`);
-            let rects = barChart.select('svg').selectAll('rect');
+            var result;
 
-            if (rects.size() == 0) {
-                rects
-                    .data(dataset)
-                    .enter()
-                    .append('rect')
-                    .attr('height', '100%')
-                    .attr('x', data => `${data.x * 100}%`)
-                    .attr('width', data => `${data.width * 100}%`)
-                    .attr('fill', data => thisColors[data.key]);
-                let divs = barChart.select('.labels').selectAll('div')
-                    .data(dataset)
-                    .enter()
-                    .append('div')
-                    .attr('class', 'label-container');
-                divs
-                    .append('div')
-                    .attr('class', 'circle')
-                    .style('background-color', data => thisColors[data.key]);
-                divs
-                    .append('span')
-                    .attr('class', 'label text')
-                    .attr('data-toggle', 'tooltip')
-                    .attr('title', data => data.key)
-                    .text(data => data.key);
-                $('[data-toggle="tooltip"]').tooltip();
-            } else {
-                rects
-                    .data(dataset)
-                    .transition()
-                    .duration(500)
-                    .ease(d3.easeLinear)
-                    .attr('x', data => `${data.x * 100}%`)
-                    .attr('width', data => `${data.width * 100}%`);
-            }
-        }
+            function updateBarChart(barChartId, barChartData) {
+                let x = 0;
+                let dataset = new Array();
+                let thisColors = colors[barChartId];
+                let entries = Object.entries(barChartData);
+                let thisSortingOrder = sortingOrder[barChartId];
+                entries.sort((first, second) => thisSortingOrder.indexOf(first[0]) - thisSortingOrder.indexOf(second[0]));
+                let sum = entries.reduce((total, entry) => total + entry[1], 0);
 
-        // Load the Visualization API and the corechart package.
-        google.charts.load('current', { 'packages': ['corechart'] });
-
-        // Set a callback to run when the Google Visualization API is loaded.
-        google.charts.setOnLoadCallback(() => {
-            let data = new google.visualization.DataTable();
-
-            data.addColumn('string', 'Role');
-            data.addColumn('number', 'Number of Workers');
-
-            let result = new Object();
-            result.edv = new Object();
-            result.roles = new Object();
-            result.hiredTo = new Object();
-            result.edv.total = new Object();
-            result.edv.byRole = new Object();
-            result.hiredTo.total = new Object();
-            result.hiredTo.byRole = new Object();
-
-            d3.csv('/data_visualization_survey/data/cleaned_survey_results_2019.csv', function (row) {
-                let rolesKey = row['Which one of these is the closest to describing your role?'];
-                let edvKey = row['Do you do more or less data visualization than you expected for this role?'];
-                let hiredToKey = row['For the majority of your projects: were you hired to do data visualization only or is data visualization a part of your job/project description?'];
-
-                if (rolesKey.includes('Leadership')) {
-                    rolesKey = 'Leadership';
-                } else if (rolesKey.includes('None')) {
-                    rolesKey = 'Other';
+                for (let [key, value] of entries) {
+                    let width = value / sum;
+                    dataset.push({
+                        key: key,
+                        x: x,
+                        width: width
+                    });
+                    x += width;
                 }
 
-                if (edvKey.includes('expected')) {
-                    edvKey = 'Expected';
-                }
+                let barChart = d3.select(`#${barChartId}`);
+                let rects = barChart.select('svg').selectAll('rect');
 
-                let edvByRole;
-                let hiredByRole;
-                if (rolesKey in result.roles) {
-                    ++result.roles[rolesKey];
-                    edvByRole = result.edv.byRole[rolesKey];
-                    hiredByRole = result.hiredTo.byRole[rolesKey];
+                if (rects.size() == 0) {
+                    rects
+                        .data(dataset)
+                        .enter()
+                        .append('rect')
+                            .attr('height', '100%')
+                            .attr('x', data => `${data.x * 100}%`)
+                            .attr('width', data => `${data.width * 100}%`)
+                            .attr('fill', data => thisColors[data.key]);
+                    let divs = barChart.select('.labels').selectAll('div')
+                        .data(dataset)
+                        .enter()
+                        .append('div')
+                            .attr('class', 'label-container');
+                    divs
+                        .append('div')
+                            .attr('class', 'circle')
+                            .style('background-color', data => thisColors[data.key]);
+                    divs
+                        .append('span')
+                            .attr('class', 'label text')
+                            .attr('data-toggle', 'tooltip')
+                            .attr('title', data => data.key)
+                            .text(data => data.key);
+                    $('[data-toggle="tooltip"]').tooltip();
                 } else {
-                    result.roles[rolesKey] = 1;
-                    edvByRole = result.edv.byRole[rolesKey] = new Object();
-                    hiredByRole = result.hiredTo.byRole[rolesKey] = new Object();
+                    rects
+                        .data(dataset)
+                        .transition()
+                            .duration(500)
+                            .ease(d3.easeLinear)
+                            .attr('x', data => `${data.x * 100}%`)
+                            .attr('width', data => `${data.width * 100}%`);
                 }
+            }
 
-                if (hiredToKey.length != 0) {
-                    if (hiredToKey in result.hiredTo.total) {
-                        ++result.hiredTo.total[hiredToKey];
-                    } else {
-                        result.hiredTo.total[hiredToKey] = 1;
+            // Load the Visualization API and the corechart package.
+            google.charts.load('current', {
+                'packages': ['corechart']
+            });
+
+            // Set a callback to run when the Google Visualization API is loaded.
+            google.charts.setOnLoadCallback(() => {
+                let data = new google.visualization.DataTable();
+
+                data.addColumn('string', 'Role');
+                data.addColumn('number', 'Number of Workers');
+
+                result = new Object();
+                result.edv = new Object();
+                result.roles = new Object();
+                result.hiredTo = new Object();
+                result.edv.total = new Object();
+                result.edv.byRole = new Object();
+                result.hiredTo.total = new Object();
+                result.hiredTo.byRole = new Object();
+
+                d3.csv('/data_visualization_survey/data/cleaned_survey_results_2019.csv', function(row) {
+                    let rolesKey = row['Which one of these is the closest to describing your role?'];
+                    let edvKey = row['Do you do more or less data visualization than you expected for this role?'];
+                    let hiredToKey = row['For the majority of your projects: were you hired to do data visualization only or is data visualization a part of your job/project description?'];
+
+                    if (rolesKey.includes('Leadership')) {
+                        rolesKey = 'Leadership';
+                    } else if (rolesKey.includes('None')) {
+                        rolesKey = 'Other';
                     }
 
-                    if (hiredToKey in hiredByRole) {
-                        ++hiredByRole[hiredToKey];
-                    } else {
-                        hiredByRole[hiredToKey] = 1;
-                    }
-                }
-
-                if (edvKey.length != 0) {
-                    if (edvKey in result.edv.total) {
-                        ++result.edv.total[edvKey];
-                    } else {
-                        result.edv.total[edvKey] = 1;
+                    if (edvKey.includes('expected')) {
+                        edvKey = 'Expected';
                     }
 
-                    if (edvKey in edvByRole) {
-                        ++edvByRole[edvKey];
+                    console.log(row);
+
+                    let edvByRole;
+                    let hiredByRole;
+                    if (rolesKey in result.roles) {
+                        ++result.roles[rolesKey];
+                        edvByRole = result.edv.byRole[rolesKey];
+                        hiredByRole = result.hiredTo.byRole[rolesKey];
                     } else {
-                        edvByRole[edvKey] = 1;
+                        result.roles[rolesKey] = 1;
+                        edvByRole = result.edv.byRole[rolesKey] = new Object();
+                        hiredByRole = result.hiredTo.byRole[rolesKey] = new Object();
                     }
-                }
-            }).then(() => { // call after every row is processed
-                let entries = Object.entries(result.roles).sort((first, second) => second[1] - first[1]);
-                data.addRows(entries);
 
-                let chart = new google.visualization.PieChart(d3.select('#role').node());
-                chart.draw(data, {
-                    title: 'Roles',
-                    backgroundColor: '#f8f9fa',
-                    width: Math.min($(window).width(), 520),
-                    height: 320
-                });
+                    if (hiredToKey.length != 0) {
+                        if (hiredToKey in result.hiredTo.total) {
+                            ++result.hiredTo.total[hiredToKey];
+                        } else {
+                            result.hiredTo.total[hiredToKey] = 1;
+                        }
 
-                updateBarChart('hiredTo', result.hiredTo.total);
-                updateBarChart('edv', result.edv.total);
-
-                google.visualization.events.addListener(chart, 'select', () => {
-                    let selectedItem = chart.getSelection()[0];
-                    if (selectedItem) {
-                        updateBarChart('hiredTo', result.hiredTo.byRole[entries[selectedItem.row][0]]);
-                        updateBarChart('edv', result.edv.byRole[entries[selectedItem.row][0]]);
-                    } else {
-                        updateBarChart('hiredTo', result.hiredTo.total);
-                        updateBarChart('edv', result.edv.total);
-
+                        if (hiredToKey in hiredByRole) {
+                            ++hiredByRole[hiredToKey];
+                        } else {
+                            hiredByRole[hiredToKey] = 1;
+                        }
                     }
+
+                    if (edvKey.length != 0) {
+                        if (edvKey in result.edv.total) {
+                            ++result.edv.total[edvKey];
+                        } else {
+                            result.edv.total[edvKey] = 1;
+                        }
+
+                        if (edvKey in edvByRole) {
+                            ++edvByRole[edvKey];
+                        } else {
+                            edvByRole[edvKey] = 1;
+                        }
+                    }
+                }).then(() => { // call after every row is processed
+                    let entries = Object.entries(result.roles).sort((first, second) => second[1] - first[1]);
+                    data.addRows(entries);
+
+                    $(() => {
+                        $(window).resize(() => {
+                            let chart = new google.visualization.PieChart(d3.select('#role').node());
+                            chart.draw(data, {
+                                title: 'Roles',
+                                backgroundColor: '#f8f9fa',
+                                width: Math.min($(window).width(), 520),
+                                height: 320
+                            });
+                        }).resize();
+                    });
+
+                    updateBarChart('hiredTo', result.hiredTo.total);
+                    updateBarChart('edv', result.edv.total);
+
+                    google.visualization.events.addListener(chart, 'select', () => {
+                        let selectedItem = chart.getSelection()[0];
+                        if (selectedItem) {
+                            updateBarChart('hiredTo', result.hiredTo.byRole[entries[selectedItem.row][0]]);
+                            updateBarChart('edv', result.edv.byRole[entries[selectedItem.row][0]]);
+                        } else {
+                            updateBarChart('hiredTo', result.hiredTo.total);
+                            updateBarChart('edv', result.edv.total);
+
+                        }
+                    });
                 });
             });
-        });
-
-    </script>
-</body>
+        </script>
+    </body>
 
 </html>
