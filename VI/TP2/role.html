@@ -213,8 +213,6 @@
                         edvKey = 'Expected';
                     }
 
-                    console.log(row);
-
                     let edvByRole;
                     let hiredByRole;
                     if (rolesKey in result.roles) {
@@ -258,9 +256,9 @@
                     let entries = Object.entries(result.roles).sort((first, second) => second[1] - first[1]);
                     data.addRows(entries);
 
+                    let chart = new google.visualization.PieChart(d3.select('#role').node());
                     $(() => {
                         $(window).resize(() => {
-                            let chart = new google.visualization.PieChart(d3.select('#role').node());
                             chart.draw(data, {
                                 title: 'Roles',
                                 backgroundColor: '#f8f9fa',

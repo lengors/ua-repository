@@ -53,8 +53,40 @@
         <!-- BOOTSTRAP END -->
 
         <script type="text/javascript">
-            let sortOrder = [ 'Less than $20,000', '$20k - $40k', '$40k - $60k', '$60k - $80k', '$80k - $100k',
-                '$100k - $120k', '$120k - $140k', '$140k - $160k', '$160k - $180k', '$180k - $200k', '$200k+' ];
+            let sortOrder = {
+                salary: [ 'Less than $20,000', '$20k - $40k', '$40k - $60k', '$60k - $80k', '$80k - $100k',
+                            '$100k - $120k', '$120k - $140k', '$140k - $160k', '$160k - $180k', '$180k - $200k', '$200k+' ],
+                salaryByRole: [
+                    'Academic',
+                    'Analyst',
+                    'Designer',
+                    'Developer',
+                    'Engineer',
+                    'Freelancer',
+                    'Leadership',
+                    'Scientist',
+                    'Student',
+                    'Other'
+                ],
+                salaryByExperience: [
+                    '0 - 1 years',
+                    '1 - 2 years',
+                    '2 - 3 years',
+                    '3 - 4 years',
+                    '4 - 5 years',
+                    '5 - 6 years',
+                    '6 - 7 years',
+                    '7 - 8 years',
+                    '+8 years'
+                ],
+                salaryByEducationalBackground: [
+                    'Technical School',
+                    'Bachelors',
+                    'Masters',
+                    'PhD',
+                    'Other'
+                ]
+            };
 
             let colors = {
                 'Less than $20,000': '#C62828',
@@ -70,13 +102,21 @@
                 '$200k+': '#90A4AE'
             };
 
+            let educationalBackgrounds = [
+                'Technical School',
+                'Bachelors',
+                'Masters',
+                'PhD'
+            ];
+
             function updateBarChart (barChartId, barChartData) {
                 const margin = 60;
+                let sortingOrder = sortOrder.salary;
                 const width = Math.min(900, $(window).width() - margin) - 2 * margin;
                 const height = Math.min(900, $(window).width() - margin) - 2 * margin;
 
                 let data = Object.entries(barChartData)
-                    .sort((first, second) => sortOrder.indexOf(first[0]) - sortOrder.indexOf(second[0]));
+                    .sort((first, second) => sortingOrder.indexOf(first[0]) - sortingOrder.indexOf(second[0]));
 
                 let keys = data.map(entry => entry[0]);
                 let values = data.map(entry => entry[1]);
@@ -129,12 +169,12 @@
                     .text('Yearly Salary');
             }
 
-            function updateStackedBarChart (barChartId, barChartData) {
+            function updateStackedBarChart (barChartId, barDataType, barChartData) {
                 const margin = 60;
-                const width = Math.min(900, $(window).width() - margin) - 2 * margin;
-                const height = Math.min(900, $(window).width() - margin) - 2 * margin;
-
-                let data = Object.entries(barChartData);
+                let sortingOrder = sortOrder[barDataType];
+                const width = (Math.min(900, $(window).width() - margin) - 2 * margin);
+                const height = (Math.min(900, $(window).width() - margin) - 2 * margin);
+                let data = Object.entries(barChartData).sort((first, second) => sortingOrder.indexOf(first[0]) - sortingOrder.indexOf(second[0]));
 
                 let keys = data.map(entry => entry[0]);
                 let values = data.map(entry => entry[1]);
@@ -142,10 +182,10 @@
                 d3.selectAll(`#${barChartId} > *`).remove();
 
                 let svg = d3.select(`#${barChartId}`)
-                    .attr('width', width + 2 * margin)
-                    .attr('height', height + 2 * margin);
+                    .attr('width', width + 2 * margin + 100)
+                    .attr('height', height + 2 * margin + 100);
 
-                var tooltip;
+                let tooltip;
 
                 let chart = svg.append('g')
                         .attr('transform', `translate(${margin}, ${margin})`);
@@ -166,8 +206,9 @@
                     .attr('transform', `translate(0, ${height})`)
                     .call(d3.axisBottom(xScale));
 
+                sortingOrder = sortOrder.salary;
                 data = data.map(entry => Object.entries(entry[1])
-                        .sort((first, second) => sortOrder.indexOf(first[0]) - sortOrder.indexOf(second[0])).map(value => [ entry[0], ...value ]))
+                        .sort((first, second) => sortingOrder.indexOf(first[0]) - sortingOrder.indexOf(second[0])).map(value => [ entry[0], ...value ]))
                     .flat();
                 
                 chart.selectAll()
@@ -199,7 +240,7 @@
                     .attr('x', width / 2 + margin)
                     .attr('y', height + 2 * margin - 20)
                     .attr('text-anchor', 'middle')
-                    .text('Yearly Salary');
+                    .text(barDataType.split(/(?=[A-Z])/).slice(2).join(' '));
                 
                 tooltip = chart.append('g')
                     .style('display', 'none');
@@ -216,11 +257,33 @@
                     .style('text-anchor', 'middle')
                     .attr('font-size', '12px')
                     .attr('font-weight', 'bold');
+
+                let legend = svg.selectAll('.legend')
+                    .data(Object.entries(colors))
+                    .enter()
+                    .append('g')
+                        .attr('class', 'legend')
+                        .attr('transform', (entry, i) => `translate(83, ${i * 19})`);
+                
+                legend.append('rect')
+                    .attr('x', width - 18)
+                    .attr('width', 18)
+                    .attr('height', 18)
+                    .style('fill', entry => entry[1]);
+
+                legend.append('text')
+                    .attr('x', width + 5)
+                    .attr('y', 9)
+                    .attr('dy', '.35em')
+                    .style('text-anchor', 'start')
+                    .text(entry => entry[0])
             }
 
             let result = new Object();
             result.salary = new Object();
             result.salaryByRole = new Object();
+            result.salaryByExperience = new Object();
+            result.salaryByEducationalBackground = new Object();
 
             d3.csv('/data_visualization_survey/data/cleaned_survey_results_2019.csv', row => {
                 let salariesKey = row['What is your yearly pay?'];
@@ -228,8 +291,22 @@
                 let rolesKey = row['Which one of these is the closest to describing your role?'];
                 let experiencesKey = row['How many years of experience do you have doing professional data visualization?'];
 
-                console.log('Background:', educationalBackgroundsKey);
-                console.log('Experience:', experiencesKey);
+                if (educationalBackgroundsKey.length != 0 && !educationalBackgrounds.includes(educationalBackgroundsKey))
+                    educationalBackgroundsKey = 'Other';
+                
+                if (experiencesKey.length != 0) {
+                    let experience = parseFloat(experiencesKey);
+
+                    for (let i = 1; i <= 8; ++i) {
+                        if (experience < i) {
+                            experiencesKey = `${i - 1} - ${i} years`;
+                            break;
+                        }
+                    }
+
+                    if (experience >= 8)
+                        experiencesKey = '+8 years';
+                }
 
                 if (rolesKey.includes('Leadership')) {
                     rolesKey = 'Leadership';
@@ -246,6 +323,24 @@
                     }
                 }
 
+                let salaryByExperience;
+                if (experiencesKey.length != 0) {
+                    if (experiencesKey in result.salaryByExperience) {
+                        salaryByExperience = result.salaryByExperience[experiencesKey];
+                    } else {
+                        salaryByExperience = result.salaryByExperience[experiencesKey] = new Object();
+                    }
+                }
+
+                let salaryByEducationalBackground;
+                if (educationalBackgroundsKey.length != 0) {
+                    if (educationalBackgroundsKey in result.salaryByEducationalBackground) {
+                        salaryByEducationalBackground = result.salaryByEducationalBackground[educationalBackgroundsKey];
+                    } else {
+                        salaryByEducationalBackground = result.salaryByEducationalBackground[educationalBackgroundsKey] = new Object();
+                    }
+                }
+
                 if (salariesKey.length != 0) {
                     if (salariesKey in result.salary) {
                         ++result.salary[salariesKey];
@@ -253,23 +348,38 @@
                         result.salary[salariesKey] = 1;
                     }
 
-                    if (salariesKey in salaryByRole) {
-                        ++salaryByRole[salariesKey];
-                    } else {
-                        salaryByRole[salariesKey] = 1;
+                    if (rolesKey.length != 0) {
+                        if (salariesKey in salaryByRole) {
+                            ++salaryByRole[salariesKey];
+                        } else {
+                            salaryByRole[salariesKey] = 1;
+                        }
+                    }
+
+                    if (experiencesKey.length != 0) {
+                        if (salariesKey in salaryByExperience) {
+                            ++salaryByExperience[salariesKey];
+                        } else {
+                            salaryByExperience[salariesKey] = 1;
+                        }
+                    }
+
+                    if (educationalBackgroundsKey.length != 0) {
+                        if (salariesKey in salaryByEducationalBackground) {
+                            ++salaryByEducationalBackground[salariesKey];
+                        } else {
+                            salaryByEducationalBackground[salariesKey] = 1;
+                        }
                     }
                 }
             }).then(() => {
-                console.log(result);
                 $(() => {
-                    console.log('HERE!!!!');
                     let updateChart = function() {
                         let val = $('#select').val();
-                        console.log(val);
                         if (val === 'salary') {
                             updateBarChart('barchart', result[val]);
                         } else {
-                            updateStackedBarChart('barchart', result[val]);
+                            updateStackedBarChart('barchart', val, result[val]);
                         }
                     };
 
