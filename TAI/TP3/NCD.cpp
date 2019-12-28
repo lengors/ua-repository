@@ -1,9 +1,6 @@
 
 #include "NCD.hpp"
 #include <iostream>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 NCD::NCD() {
     compressor = "gzip";
@@ -15,29 +12,52 @@ NCD::NCD(std::string comp) {
 
 float NCD::GetFileSize(std::string filename)
 {
-    struct stat stat_buf;
-    int rc = stat(filename.c_str(), &stat_buf);
-    return rc == 0 ? stat_buf.st_size : -1;
+    
+    FILE* outputfile = popen(("ls -l " + filename + " | cut -d ' ' -f5").c_str(), "r");
+    std::string result = "";
+    char buffer[100];
+    while ( ! feof (outputfile) )
+    {
+        if ( fgets (buffer , 100 , outputfile) == NULL ) break;
+        result += buffer;
+    }
+    fclose (outputfile);
+    
+    return stof(result);
 }
 
 
 
 float NCD::compress(std::string filename, std::string filename2){
     std::string command = "";
+    float size;
+
     if (filename2 != ""){
         system(("convert " + filename + " " + filename2 + " -append " + "full.pgm").c_str());
         filename = "full.pgm";
     }
-    if (filename == "full.pgm"){
-        command = compressor + " " + filename;
+
+    if (compressor == "gzip"){
+        command = compressor + " -k " + filename; 
+        
+        system((command).c_str());
+        size = GetFileSize(filename + ".gz");
+        system(("rm " + filename + ".gz").c_str());
+        
     }
-    else {
-        command = compressor + " -k " + filename;
+
+    else if (compressor == "lzma"){
+        command = "lzma -k " + filename; 
+        system((command).c_str());
+        
+        size = GetFileSize(filename + ".lzma");
+        system(("rm -f " + filename + ".lzma").c_str());
+        
     }
+    system("rm -f full.pgm");
     
-    system((command).c_str());
-    float size = GetFileSize(filename + ".gz");
-    system("rm *.gz");
+    
+    
     return size;
 
 
@@ -49,7 +69,8 @@ float NCD::compute(std::string filename, std::string filename2) {
     float cx = compress(filename);
     float cy = compress(filename2);
 
-    std::cout << cxy << " - " <<  cx << " - " << cy << std::endl; 
+    //std::cout << cxy << " - " <<  cx << " - " << cy << std::endl; 
     return ((cxy - (cx > cy ? cy : cx)) / (cx > cy ? cx : cy)); 
+    
 
 }

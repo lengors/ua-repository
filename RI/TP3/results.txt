@@ -52,8 +52,13 @@ Top-10
 50            0.000            0.000            0.000            0.000            0.000
 
 Top-10 - Average
+<<<<<<< HEAD
+     Precision           Recall        F-Measure   Avg. Precision             NDCG
+         0.292            0.065            0.086            0.337            0.101
+=======
           Precision           Recall        F-Measure   Avg. Precision             NDCG
 50            0.292            0.065            0.086            0.337            0.101
+>>>>>>> 53a78974f6676e1c450037e35a1b8671f46e4438
 
 Top-20
           Precision           Recall        F-Measure   Avg. Precision             NDCG
@@ -109,8 +114,13 @@ Top-20
 50            0.250            0.017            0.031            0.050            0.018
 
 Top-20 - Average
+<<<<<<< HEAD
+     Precision           Recall        F-Measure   Avg. Precision             NDCG
+         0.257            0.081            0.105            0.303            0.120
+=======
           Precision           Recall        F-Measure   Avg. Precision             NDCG
 50            0.257            0.081            0.105            0.303            0.120
+>>>>>>> 53a78974f6676e1c450037e35a1b8671f46e4438
 
 Top-50
           Precision           Recall        F-Measure   Avg. Precision             NDCG
@@ -166,6 +176,11 @@ Top-50
 50            0.140            0.023            0.040            0.136            0.024
 
 Top-50 - Average
+<<<<<<< HEAD
+     Precision           Recall        F-Measure   Avg. Precision             NDCG
+         0.214            0.116            0.131            0.258            0.150
+=======
           Precision           Recall        F-Measure   Avg. Precision             NDCG
 50            0.214            0.116            0.131            0.258            0.150
+>>>>>>> 53a78974f6676e1c450037e35a1b8671f46e4438
 

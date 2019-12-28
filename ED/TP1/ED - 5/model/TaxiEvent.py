@@ -1,13 +1,14 @@
 from .TrafficDate import TrafficDate
 from .TrafficTime import TrafficTime
+from .RoadSegment import RoadSegment
 from datetime import datetime
 from .Taxi import Taxi
 
 class TaxiEvent:
 
     def __init__(self, segment, taxi, dt : datetime):
-        self.segment = segment
         self.taxi = Taxi.get(taxi)
+        self.segment = RoadSegment.get(segment)
         dt = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S')
         self.date = TrafficDate.get(dt.date())
         self.time = TrafficTime.get(dt.time())

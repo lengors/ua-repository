@@ -1,245 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <title>Data Visualization</title>
-    <link rel="icon" href="/content/logo.png" style="border-radius: 50%;">
+    <head>
+        <title>Data Visualization</title>
+        <link rel="icon" href="/content/logo.png" style="border-radius: 50%;">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- BOOTSTRAP START -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- BOOTSTRAP END -->
+        <!-- BOOTSTRAP START -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!-- BOOTSTRAP END -->
 
-    <script type="text/javascript" src="https://d3js.org/d3.v5.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <link rel="stylesheet" type="text/css" href="/styles/main.css">
+        <link rel="stylesheet" type="text/css" href="/styles/extended.css">
 
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
+        <script type="text/javascript" src="https://d3js.org/d3.v5.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </head>
 
-        body {
-            display: -ms-flexbox;
-            display: flex;
-            flex-wrap: wrap;
-            -ms-flex-wrap: wrap;
-            -ms-flex-align: center;
-            align-items: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
-        }
-
-        body::after {
-            content: "";
-            background-image: url("/content/background.jpg");
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            background-size: cover;
-            opacity: 0.75;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            position: fixed;
-            z-index: -1;
-        }
-
-        .menu {
-            width: 100%;
-            max-width: 520px;
-            padding: 60px;
-            margin: auto;
-            margin-bottom: 0;
-        }
-
-        .centered-container {
-            border-radius: 15px;
-        }
-
-        .logo {
-            border-radius: 4px;
-        }
-
-        .footer {
-            height: 0;
-            width: 100%;
-            flex-basis: 100%;
-            margin-bottom: 40px;
-        }
-
-        .chart .bar-chart {
-            vertical-align: top;
-            width: 55%;
-        }
-
-        .chart .text {
-            font-size: 12px;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .chart .title {
-            font-weight: bold;
-            display: block;
-            max-width: 55%;
-            text-align: justify;
-        }
-
-        .chart .labels {
-            width: calc(45% - 35px);
-            display: inline-block;
-            margin-left: 30px;
-        }
-
-        .chart .labels .label-container {
-            display: inline-block;
-            width: 100%;
-        }
-
-        .chart .labels .label-container .circle {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .chart .labels .label-container .label {
-            display: inline-block;
-            color: #222;
-            line-height: 12px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: calc(100% - 23px);
-            white-space: nowrap;
-            margin-left: 5px;
-        }
-
-        .bar-chart {
-            height: 25px;
-        }
-    </style>
-</head>
-
-<body class="bg-light">
-    <div class="menu bg-light centered-container">
-        <div class="pt-2 pb-4 text-center">
-            <img class="logo d-block mx-auto mb-4" src="/content/logo.png" alt="Understand Your Toolset" width="96"
-                height="72">
-            <h2>Understand Your Toolset</h2>
-        </div>
-        <div class="form-group">
-            <label for="select">Select</label>
-            <select class="form-control" id="select">
+    <body class="bg-light">
+        <div class="menu bg-light centered-container">
+            <div class="pt-2 pb-4 text-center">
+                <img class="logo d-block mx-auto mb-4" src="/content/logo.png" alt="Understand Your Toolset" width="96" height="72">
+                <h2>Understand Your Toolset</h2>
+            </div>
+            <div class="form-group">
+                <label for="select">Select</label>
+                <select class="form-control" id="select">
                 <option value="technologies">What technologies are use to visualize data?</option>
                 <option value="charts">Which charts have been used in production in the last 6 months?</option>
             </select>
+            </div>
+            <div class="row justify-content-center">
+                <div id="piechart" class="bg-light"></div>
+            </div>
         </div>
-        <div class="row justify-content-center">
-            <div id="piechart" class="bg-light"></div>
-        </div>
-    </div>
-    <div class="footer"></div>
+        <div class="footer"></div>
 
-    <!-- BOOTSTRAP START -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-    <!-- BOOTSTRAP END -->
+        <!-- BOOTSTRAP START -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <!-- BOOTSTRAP END -->
 
-    <script type="text/javascript">
-        var result;
+        <script type="text/javascript">
+            var technologies = ['ArcGIS', 'Cytoscape', 'D3', 'Angular', 'Excel', 'ggplot2', 'Gephi', 'Highcharts', 'Illustrator', 'Java', 'Leaflet',
+                'Mapbox', 'kepler.gl', 'Microstrategy', 'Plotly', 'Power BI', 'Processing', 'Python', 'QGIS', 'Qlik', 'R', 'React', 'Semiotic', 'Tableau',
+                'Vega', 'Vue', 'Web Components', 'WebGL', 'Pen & Paper', 'Other physical materials', 'Greensock', 'Canvas', 'P5/Processing', 'Matplotlib'
+            ];
 
-        var technologies = ['ArcGIS', 'Cytoscape', 'D3', 'Angular', 'Excel', 'ggplot2', 'Gephi', 'Highcharts', 'Illustrator', 'Java', 'Leaflet',
-            'Mapbox', 'kepler.gl', 'Microstrategy', 'Plotly', 'Power BI', 'Processing', 'Python', 'QGIS', 'Qlik', 'R', 'React', 'Semiotic', 'Tableau',
-            'Vega', 'Vue', 'Web Components', 'WebGL', 'Pen & Paper', 'Other physical materials', 'Greensock', 'Canvas', 'P5/Processing', 'Matplotlib'];
+            let charts = ['Line Chart', 'Bar Chart', 'Pie Chart', 'Scatterplot', 'Hexbin/Heatmap', 'Infographics', 'Pictorial Visualization', 'Treemap',
+                'Dendrogram', 'Network Diagram', 'Choropleth Map', 'Raster Map', 'Flow Diagram (Sankey, DAGRE, Flow Chart)', '3D Charts', 'VR/AR Charts',
+                'Swarm Chart', 'Force-Directed Graph'
+            ];
 
-        let charts = [ 'Line Chart', 'Bar Chart', 'Pie Chart', 'Scatterplot', 'Hexbin/Heatmap', 'Infographics', 'Pictorial Visualization', 'Treemap',
-            'Dendrogram', 'Network Diagram', 'Choropleth Map', 'Raster Map', 'Flow Diagram (Sankey, DAGRE, Flow Chart)', '3D Charts', 'VR/AR Charts',
-            'Swarm Chart', 'Force-Directed Graph' ];
+            // Load the Visualization API and the corechart package.
+            google.charts.load('current', {
+                'packages': ['corechart']
+            });
 
-        // Load the Visualization API and the corechart package.
-        google.charts.load('current', { 'packages': ['corechart'] });
+            // Set a callback to run when the Google Visualization API is loaded.
+            google.charts.setOnLoadCallback(() => {
+                let data = new Object();
+                data.charts = new google.visualization.DataTable();
+                data.technologies = new google.visualization.DataTable();
 
-        // Set a callback to run when the Google Visualization API is loaded.
-        google.charts.setOnLoadCallback(() => {
-            let data = new Object();
-            data.charts = new google.visualization.DataTable();
-            data.technologies = new google.visualization.DataTable();
+                data.charts.addColumn('string', 'Charts');
+                data.charts.addColumn('number', 'Number of People Using it');
 
-            data.charts.addColumn('string', 'Charts');
-            data.charts.addColumn('number', 'Number of People Using it');
+                data.technologies.addColumn('string', 'Technologies');
+                data.technologies.addColumn('number', 'Number of People Using it');
 
-            data.technologies.addColumn('string', 'Technologies');
-            data.technologies.addColumn('number', 'Number of People Using it');
+                let result = new Object();
+                result.charts = new Object();
+                result.technologies = new Object();
 
-            result = new Object();
-            result.charts = new Object();
-            result.technologies = new Object();
+                d3.csv('/data_visualization_survey/data/cleaned_survey_results_2019.csv', function(row) {
+                    let technologiesKey = row['What technologies do you use to visualize data? Select all that apply.'];
+                    let chartsKey = row['Which of these charts have you used in production in the last 6 months? Select all that apply.'];
 
-            d3.csv('/data_visualization_survey/data/cleaned_survey_results_2019.csv', function (row) {
-                let technologiesKey = row['What technologies do you use to visualize data? Select all that apply.'];
-                let chartsKey = row['Which of these charts have you used in production in the last 6 months? Select all that apply.'];
+                    if (technologiesKey.length != 0) {
+                        let technologiesKeys = technologiesKey.split(',')
+                            .map(key => key.trim()).filter(key => key.length != 0)
+                            .map(key => technologies.includes(key) ? key : 'Other');
 
-                if (technologiesKey.length != 0) {
-                    let technologiesKeys = technologiesKey.split(',')
-                        .map(key => key.trim()).filter(key => key.length != 0)
-                        .map(key => technologies.includes(key) ? key : 'Other');
-
-                    for (let key of technologiesKeys) {
-                        if (key in result.technologies) {
-                            ++result.technologies[key];
-                        } else {
-                            result.technologies[key] = 1;
+                        for (let key of technologiesKeys) {
+                            if (key in result.technologies) {
+                                ++result.technologies[key];
+                            } else {
+                                result.technologies[key] = 1;
+                            }
                         }
                     }
-                }
 
-                if (chartsKey.length != 0) {
-                    let chartsKeys = chartsKey.split(',')
-                        .map(key => key.trim()).filter(key => key.length != 0)
-                        .map(key => charts.includes(key) ? key : 'Other');
+                    if (chartsKey.length != 0) {
+                        let chartsKeys = chartsKey.split(',')
+                            .map(key => key.trim()).filter(key => key.length != 0)
+                            .map(key => charts.includes(key) ? key : 'Other');
 
-                    for (let key of chartsKeys) {
-                        if (key in result.charts) {
-                            ++result.charts[key];
-                        } else {
-                            result.charts[key] = 1;
+                        for (let key of chartsKeys) {
+                            if (key in result.charts) {
+                                ++result.charts[key];
+                            } else {
+                                result.charts[key] = 1;
+                            }
                         }
                     }
-                }
-            }).then(() => { // call after every row is processed
-                let ec = Object.entries(result.charts).sort((first, second) => second[1] - first[1]);
-                let et = Object.entries(result.technologies).sort((first, second) => second[1] - first[1]);
-                
-                data.charts.addRows(ec);
-                data.technologies.addRows(et);
+                }).then(() => { // call after every row is processed
+                    // Group it in other
+                    let ec = Object.entries(result.charts);
+                    let et = Object.entries(result.technologies);
 
-                let chart = new google.visualization.PieChart(d3.select('#piechart').node());
+                    let csum = ec.reduce((total, entry) => total + entry[1], 0);
+                    let tsum = et.reduce((total, entry) => total + entry[1], 0);
 
-                $(() => {
-                    $('#select').change(() => {
-                        let val = $('#select').val();
-                        chart.draw(data[val], {
-                            title: val.charAt(0).toUpperCase() + val.slice(1),
-                            backgroundColor: '#f8f9fa',
-                            width: Math.min($(window).width(), 520),
-                            height: 320
-                        });
-                    }).change();
+                    ec = ec.map(entry => entry[1] / csum >= 0.02 ? entry : ['Other', entry[1]]);
+                    et = et.map(entry => entry[1] / tsum >= 0.02 ? entry : ['Other', entry[1]]);
+
+                    ec = ec.reduce((total, entry) => {
+                        if (entry[0] in total) {
+                            total[entry[0]] += entry[1];
+                        } else {
+                            total[entry[0]] = entry[1]
+                        }
+                        return total;
+                    }, new Object());
+
+                    et = et.reduce((total, entry) => {
+                        if (entry[0] in total) {
+                            total[entry[0]] += entry[1];
+                        } else {
+                            total[entry[0]] = entry[1]
+                        }
+                        return total;
+                    }, new Object());
+
+                    ec = Object.entries(ec).sort((first, second) => second[1] - first[1]);
+                    et = Object.entries(et).sort((first, second) => second[1] - first[1]);
+
+                    data.charts.addRows(ec);
+                    data.technologies.addRows(et);
+
+                    let chart = new google.visualization.PieChart(d3.select('#piechart').node());
+
+                    $(() => {
+                        let updatePieChart = function() {
+                            let val = $('#select').val();
+                            chart.draw(data[val], {
+                                title: val.charAt(0).toUpperCase() + val.slice(1),
+                                backgroundColor: '#f8f9fa',
+                                width: Math.min($(window).width(), 520),
+                                height: 320
+                            });
+                        };
+
+                        $(window).resize(updatePieChart).resize();
+                        $('#select').change(updatePieChart);
+                    });
                 });
             });
-        });
-
-    </script>
-</body>
+        </script>
+    </body>
 
 </html>
