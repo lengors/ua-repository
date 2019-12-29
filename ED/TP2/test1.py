@@ -23,26 +23,29 @@ gender_info['testing'] = gender_info[4] / (gender_info[4] + gender_info[5])
 gender_info.rename(columns = dict(enumerate(gicolumns)), inplace = True)
 gender_info = gender_info[gicolumns + [ 'training', 'testing' ]]
 
-# load overall energy ratios and merge with gnender info
+# load data with gnender info
 overall = pd.read_excel(os.path.join('RAVEN', 'overall_energy_ratios.xlsx'))
 overall_immersion = pd.read_excel(os.path.join('RAVEN', 'overall_immersion.xlsx'))
 overall_immersion.columns = [ 'immersion_{}'.format('_'.join(column.split(' '))) for column in overall_immersion.columns ]
-
 overall = pd.concat([ overall, overall_immersion ], axis = 1)
-
 overall_P100 = pd.read_excel(os.path.join('RAVEN', 'Overall_P100.xlsx'))
 overall = pd.merge(overall, overall_P100, on = 'Indiv')
-
+overall_P100_correct_incorrect = pd.read_excel(os.path.join('RAVEN', 'Overall_P100_correct_incorrect.xlsx'))
+overall = pd.merge(overall, overall_P100_correct_incorrect, on = 'Indiv')
 overall_P300 = pd.read_excel(os.path.join('RAVEN', 'Overall_P300.xlsx'))
 overall = pd.merge(overall, overall_P300, on = 'Indiv')
-
+overall_P300_correct_incorrect = pd.read_excel(os.path.join('RAVEN', 'Overall_P300_correct_incorrect.xlsx'))
+overall = pd.merge(overall, overall_P300_correct_incorrect, on = 'Indiv')
 overall = pd.merge(overall, gender_info, on = 'Indiv')
+
+for target in classes:
+    keep = overall['Gender'] == target
+    target_df = overall[keep]
+    overall[keep] = target_df.fillna(target_df.mean())
 
 # select columns and rows
 overall = overall[[ feature for feature in overall.columns if 'correct' not in feature ]]
-overall.dropna(inplace = True)
 overall = overall[overall[[ feature for feature in overall.columns if feature not in gender_info.columns ]].sum(axis = 1) > 0]
-
 columns = [ column for column in overall.columns if column not in gicolumns ]
 
 # apply standard scaling
@@ -56,26 +59,6 @@ x = pd.DataFrame(x, columns = columns)
 pca = PCA()
 x_pca = pca.fit_transform(x)
 x_pca = pd.DataFrame(pca.components_, columns = x.columns, index = [ 'PC{}'.format(i + 1) for i in range(len(pca.explained_variance_ratio_)) ])
-x_pca['Gender'] = y
-
-# print(pca.explained_variance_ratio_)
-
-features = dict()
-for column in columns:
-    feature = [ abs(value) for value in x_pca.loc[:, column] ]
-    features[column] = sum([ x * y for x, y in zip(pca.explained_variance_ratio_, feature) ])
-    # values, columns = zip(*sorted(zip([ abs(value) for value in x_pca.iloc[[ row ]].values[0] ], x_pca.columns), key = lambda x : x[0], reverse = True))
-    # result = pd.DataFrame(np.array([ values ]), columns = columns, index = [ row ])
-
-values = features.items()
-vector = [ value for _, value in values ]
-
-m = min(vector)
-b = max(vector) - m
-vector = [ (x - m) / b for x in vector ]
-values = zip([ value for value, _ in values ], vector)
-
-columns = [ column for column, value in values if value > 0.5 ]
 
 # normalization
 x = overall[columns].values
@@ -89,76 +72,88 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC
 from sklearn.cluster import KMeans
 
-y = overall['Gender'].values
-X = overall[columns].values
+with open('results.txt', 'w') as fout:
+    pass
 
-yset = set(y)
-yset = dict([ (value, i) for i, value in enumerate(yset) ])
-y = [ yset[value] for value in y ]
-length = X.shape[0]
+print('Processing...')
+for f_count in range(1, len(pca.explained_variance_ratio_) + 1):
+    columns = list(set([ x_pca.columns[np.abs(x_pca.loc['PC{}'.format(i + 1), :].values).argmax()] for i in range(f_count) ]))
 
-rf_accuracy = 0
-mlp_accuracy = 0
-sgd_accuracy = 0
-linear_svc_accuracy = 0
-ppn_accuracy = 0
-svc_accuracy = 0
+    y = overall['Gender'].values
+    X = overall[columns].values
 
-amount = 1000
-for i in range(amount):
-    rf_classifier = RandomForestClassifier(max_depth = 3, min_samples_split = 5,n_estimators = 10, max_features = 'log2', oob_score = False)
-    mlp_classifier = MLPClassifier(activation = 'tanh', hidden_layer_sizes = (10, 5), alpha = 0.01, max_iter = 5000)
-    sgd_classifier = SGDClassifier(loss = 'log', max_iter = 100000)
-    linear_svc_classifier = LinearSVC(C = 1.0, max_iter = 100000, tol = 1e-05, verbose = 0)
-    ppn_classifier = Perceptron(penalty = None, alpha = 0.0001, fit_intercept = True, max_iter = 10000, tol = None, 
-                   eta0 = 0.1, n_jobs = 1, random_state = 0, class_weight = None, warm_start = False)
-    svc_classifier = SVC(C = 1.0, kernel = 'rbf', max_iter = 100000, tol = 1e-05, verbose = 0)
+    yset = set(y)
+    yset = dict([ (value, i) for i, value in enumerate(yset) ])
+    y = [ yset[value] for value in y ]
+    length = X.shape[0]
 
-    training_size = math.floor(length * 0.8)
-    testing_size = length - training_size
+    rf_accuracy = 0
+    mlp_accuracy = 0
+    sgd_accuracy = 0
+    linear_svc_accuracy = 0
+    ppn_accuracy = 0
+    svc_accuracy = 0
 
-    training_choice = list(np.random.choice(X.shape[0], training_size, replace = False))
-    testing_choice = [ i for i in range(X.shape[0]) if i not in training_choice ]
+    amount = 2000
+    for i in range(amount):
+        rf_classifier = RandomForestClassifier(max_depth = 3, min_samples_split = 5,n_estimators = 10, max_features = 'log2', oob_score = False)
+        mlp_classifier = MLPClassifier(activation = 'tanh', hidden_layer_sizes = (10, 5), alpha = 0.01, max_iter = 5000)
+        sgd_classifier = SGDClassifier(loss = 'log', max_iter = 100000)
+        linear_svc_classifier = LinearSVC(C = 1.0, max_iter = 100000, tol = 1e-05, verbose = 0)
+        ppn_classifier = Perceptron(penalty = None, alpha = 0.0001, fit_intercept = True, max_iter = 10000, tol = None, 
+                       eta0 = 0.1, n_jobs = 1, random_state = 0, class_weight = None, warm_start = False)
+        svc_classifier = SVC(C = 1.0, kernel = 'rbf', max_iter = 100000, tol = 1e-05, verbose = 0)
 
-    X_training = X[training_choice, :]
-    Y_training = [ y[value] for value in training_choice ]
+        training_size = math.floor(length * 0.8)
+        testing_size = length - training_size
 
-    X_testing = X[testing_choice, :]
-    Y_testing = [ y[value] for value in testing_choice ]
+        training_choice = list(np.random.choice(X.shape[0], training_size, replace = False))
+        testing_choice = [ i for i in range(X.shape[0]) if i not in training_choice ]
 
-    rf_classifier.fit(X_training, Y_training)
-    rf_Y_pred = rf_classifier.predict(X_testing)
+        X_training = X[training_choice, :]
+        Y_training = [ y[value] for value in training_choice ]
 
-    mlp_classifier.fit(X_training, Y_training)
-    mlp_Y_pred = mlp_classifier.predict(X_testing)
+        X_testing = X[testing_choice, :]
+        Y_testing = [ y[value] for value in testing_choice ]
 
-    sgd_classifier.fit(X_training, Y_training)
-    sgd_Y_pred = sgd_classifier.predict(X_testing)
+        rf_classifier.fit(X_training, Y_training)
+        rf_Y_pred = rf_classifier.predict(X_testing)
 
-    linear_svc_classifier.fit(X_training, Y_training)
-    linear_svc_Y_pred = linear_svc_classifier.predict(X_testing)
+        mlp_classifier.fit(X_training, Y_training)
+        mlp_Y_pred = mlp_classifier.predict(X_testing)
 
-    ppn_classifier.fit(X_training, Y_training)
-    ppn_Y_pred = ppn_classifier.predict(X_testing)
+        sgd_classifier.fit(X_training, Y_training)
+        sgd_Y_pred = sgd_classifier.predict(X_testing)
 
-    svc_classifier.fit(X_training, Y_training)
-    svc_Y_pred = svc_classifier.predict(X_testing)
+        linear_svc_classifier.fit(X_training, Y_training)
+        linear_svc_Y_pred = linear_svc_classifier.predict(X_testing)
 
-    rf_accuracy += accuracy_score(Y_testing, rf_Y_pred)
-    mlp_accuracy += accuracy_score(Y_testing, mlp_Y_pred)
-    sgd_accuracy += accuracy_score(Y_testing, sgd_Y_pred)
-    linear_svc_accuracy += accuracy_score(Y_testing, linear_svc_Y_pred)
-    ppn_accuracy += accuracy_score(Y_testing, ppn_Y_pred)
-    svc_accuracy += accuracy_score(Y_testing, svc_Y_pred)
-    print(i)
+        ppn_classifier.fit(X_training, Y_training)
+        ppn_Y_pred = ppn_classifier.predict(X_testing)
 
-print('Random Forest Accuracy: {}'.format(rf_accuracy / amount))
-print('MLP Accuracy: {}'.format(mlp_accuracy / amount))
-print('SGD Accuracy: {}'.format(sgd_accuracy / amount))
-print('Linear SVC Accuracy: {}'.format(linear_svc_accuracy / amount))
-print('PPN Accuracy: {}'.format(ppn_accuracy / amount))
-print('SVC Accuracy: {}'.format(svc_accuracy / amount))
+        svc_classifier.fit(X_training, Y_training)
+        svc_Y_pred = svc_classifier.predict(X_testing)
 
-# print(sorted(, key = lambda x : x[1], reverse = True))
+        rf_accuracy += accuracy_score(Y_testing, rf_Y_pred)
+        mlp_accuracy += accuracy_score(Y_testing, mlp_Y_pred)
+        sgd_accuracy += accuracy_score(Y_testing, sgd_Y_pred)
+        linear_svc_accuracy += accuracy_score(Y_testing, linear_svc_Y_pred)
+        ppn_accuracy += accuracy_score(Y_testing, ppn_Y_pred)
+        svc_accuracy += accuracy_score(Y_testing, svc_Y_pred)
 
-# print(overall)
+    print('\ntop-{}'.format(f_count))
+    print('Random Forest Accuracy: {}'.format(rf_accuracy / amount))
+    print('MLP Accuracy: {}'.format(mlp_accuracy / amount))
+    print('SGD Accuracy: {}'.format(sgd_accuracy / amount))
+    print('Linear SVC Accuracy: {}'.format(linear_svc_accuracy / amount))
+    print('PPN Accuracy: {}'.format(ppn_accuracy / amount))
+    print('SVC Accuracy: {}'.format(svc_accuracy / amount))
+
+    with open('results.txt', 'a+') as fout:
+        fout.write('\ntop-{}:\n'.format(f_count))
+        fout.write('Random Forest Accuracy: {}\n'.format(rf_accuracy / amount))
+        fout.write('MLP Accuracy: {}\n'.format(mlp_accuracy / amount))
+        fout.write('SGD Accuracy: {}\n'.format(sgd_accuracy / amount))
+        fout.write('Linear SVC Accuracy: {}\n'.format(linear_svc_accuracy / amount))
+        fout.write('PPN Accuracy: {}\n'.format(ppn_accuracy / amount))
+        fout.write('SVC Accuracy: {}\n'.format(svc_accuracy / amount))
