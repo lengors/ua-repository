@@ -1,7 +1,7 @@
 # imports
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.decomposition import KernelPCA
 from sklearn.metrics import accuracy_score
-from sklearn.decomposition import PCA
 from sklearn.svm import LinearSVC
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -54,25 +54,19 @@ x = standard_scaler.fit_transform(x)
 x = pd.DataFrame(x, columns = columns)
 
 # apply PCA
-pca = PCA()
-x_pca = pca.fit_transform(x)
-x_pca = pd.DataFrame(pca.components_, columns = x.columns, index = [ 'PC{}'.format(i + 1) for i in range(len(pca.explained_variance_ratio_)) ])
-
-columns = list(set([ x_pca.columns[np.abs(x_pca.loc['PC{}'.format(i + 1), :].values).argmax()] for i in range(min(2, len(pca.explained_variance_ratio_))) ]))
+pca = KernelPCA(n_components = 28, kernel = 'rbf', gamma = 15, fit_inverse_transform = True)
+x = pca.fit_transform(x)
 
 # normalization
-x = overall[columns].values
 min_max_scaler = MinMaxScaler()
 x = min_max_scaler.fit_transform(x)
-overall[columns] = pd.DataFrame(x, columns = columns, index = overall.index)
 
 y = overall['Gender'].values
-X = overall[columns].values
 
 yset = set(y)
 yset = dict([ (value, i) for i, value in enumerate(yset) ])
 y = [ yset[value] for value in y ]
-length = X.shape[0]
+length = x.shape[0]
 
 amount = 1000
 linear_svc_accuracy = 0
@@ -82,13 +76,13 @@ for i in range(amount):
     training_size = math.floor(length * 0.8)
     testing_size = length - training_size
 
-    training_choice = list(np.random.choice(X.shape[0], training_size, replace = False))
-    testing_choice = [ i for i in range(X.shape[0]) if i not in training_choice ]
+    training_choice = list(np.random.choice(x.shape[0], training_size, replace = False))
+    testing_choice = [ i for i in range(x.shape[0]) if i not in training_choice ]
 
-    X_training = X[training_choice, :]
+    X_training = x[training_choice, :]
     Y_training = [ y[value] for value in training_choice ]
 
-    X_testing = X[testing_choice, :]
+    X_testing = x[testing_choice, :]
     Y_testing = [ y[value] for value in testing_choice ]
 
     linear_svc_classifier.fit(X_training, Y_training)

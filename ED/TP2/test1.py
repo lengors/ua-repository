@@ -14,9 +14,7 @@ import os, math
 
 
 def test(args):
-    f_count, overall, columns = args
-    y = overall['Gender'].values
-    X = overall[columns].values
+    f_count, X, y = args
 
     yset = set(y)
     yset = dict([ (value, i) for i, value in enumerate(yset) ])
@@ -126,28 +124,36 @@ if __name__ == '__main__':
     # y = overall[[ 'Gender' ]].values
     standard_scaler = StandardScaler()
     x = standard_scaler.fit_transform(x)
-    x = pd.DataFrame(x, columns = columns)
+    topca = pd.DataFrame(x, columns = columns)
 
     # apply PCA
     # pca = PCA()
-    pca = KernelPCA(n_components=2, kernel='rbf', gamma=15, fit_inverse_transform=True)
-    x_pca = pca.fit_transform(x)
-    print(x_pca)
-    x_pca = pd.DataFrame(pca.components_, columns = x.columns, index = [ 'PC{}'.format(i + 1) for i in range(len(pca.explained_variance_ratio_)) ])
+
+    iterable = list()
+    for i in range(1, 34):
+        pca = KernelPCA(n_components = i, kernel = 'rbf', gamma = 15, fit_inverse_transform = True)
+        x_pca = pca.fit_transform(topca)
+
+    # print(x_pca.shape)
+    # x_pca = pd.DataFrame(pca.components_, columns = x.columns, index = [ 'PC{}'.format(i + 1) for i in range(len(pca.explained_variance_ratio_)) ])
 
     # normalization
-    x = overall[columns].values
-    min_max_scaler = MinMaxScaler()
-    x = min_max_scaler.fit_transform(x)
-    overall[columns] = pd.DataFrame(x, columns = columns, index = overall.index)
+        x = x_pca
+        min_max_scaler = MinMaxScaler()
+        x = min_max_scaler.fit_transform(x)
 
-    with open('results6.txt', 'w') as fout:
+        iterable.append((i, x, overall['Gender'].values))
+    # overall[columns] = pd.DataFrame(x, columns = columns, index = overall.index)
+
+    with open('results7.txt', 'w') as fout:
         pass
 
     print('Processing...')
 
-    iterable = [ (f_count, overall, list(set([ x_pca.columns[np.abs(x_pca.loc['PC{}'.format(i + 1), :].values).argmax() ] for i in range(f_count) ]))) for f_count in range(1, len(pca.explained_variance_ratio_) + 1) ]
-    iterable.append((len(columns), overall, columns))
+    # iterable = [ (f_count, overall, list(set([ x_pca.columns[np.abs(x_pca.loc['PC{}'.format(i + 1), :].values).argmax() ] for i in range(f_count) ]))) for f_count in range(1, len(pca.explained_variance_ratio_) + 1) ]
+    # iterable.append((len(columns), overall, columns))
+
+    # iterable = x_pca, overall['Gender'].values
 
     with ProcessPoolExecutor(max_workers = 12) as executor:
         for f_count, rf_accuracy, mlp_accuracy, sgd_accuracy, linear_svc_accuracy, ppn_accuracy, svc_accuracy in executor.map(test, iterable):
@@ -159,7 +165,7 @@ if __name__ == '__main__':
             print('PPN Accuracy: {}'.format(ppn_accuracy))
             print('SVC Accuracy: {}'.format(svc_accuracy))
 
-            with open('results6.txt', 'a+') as fout:
+            with open('results7.txt', 'a+') as fout:
                 fout.write('\ntop-{}:\n'.format(f_count))
                 fout.write('Random Forest Accuracy: {}\n'.format(rf_accuracy))
                 fout.write('MLP Accuracy: {}\n'.format(mlp_accuracy))
