@@ -31,12 +31,12 @@ overall_immersion.columns = [ 'immersion_{}'.format('_'.join(column.split(' ')))
 overall = pd.concat([ overall, overall_immersion ], axis = 1)
 overall_P100 = pd.read_excel(os.path.join('RAVEN', 'Overall_P100.xlsx'))
 overall = pd.merge(overall, overall_P100, on = 'Indiv')
-overall_P100_correct_incorrect = pd.read_excel(os.path.join('RAVEN', 'Overall_P100_correct_incorrect.xlsx'))
-overall = pd.merge(overall, overall_P100_correct_incorrect, on = 'Indiv')
+# overall_P100_correct_incorrect = pd.read_excel(os.path.join('RAVEN', 'Overall_P100_correct_incorrect.xlsx'))
+# overall = pd.merge(overall, overall_P100_correct_incorrect, on = 'Indiv')
 overall_P300 = pd.read_excel(os.path.join('RAVEN', 'Overall_P300.xlsx'))
 overall = pd.merge(overall, overall_P300, on = 'Indiv')
-overall_P300_correct_incorrect = pd.read_excel(os.path.join('RAVEN', 'Overall_P300_correct_incorrect.xlsx'))
-overall = pd.merge(overall, overall_P300_correct_incorrect, on = 'Indiv')
+# overall_P300_correct_incorrect = pd.read_excel(os.path.join('RAVEN', 'Overall_P300_correct_incorrect.xlsx'))
+# overall = pd.merge(overall, overall_P300_correct_incorrect, on = 'Indiv')
 overall = pd.merge(overall, gender_info, on = 'Indiv')
 
 for target in classes:
@@ -45,12 +45,10 @@ for target in classes:
     overall[keep] = target_df.fillna(target_df.mean())
 
 # select columns and rows
-overall = overall[[ feature for feature in overall.columns if 'correct' not in feature ]]
 overall = overall[overall[[ feature for feature in overall.columns if feature not in gender_info.columns ]].sum(axis = 1) > 0]
 columns = [ column for column in overall.columns if column not in gicolumns ]
 
 x = overall[columns].values
-y = overall[[ 'Gender' ]].values
 standard_scaler = StandardScaler()
 x = standard_scaler.fit_transform(x)
 x = pd.DataFrame(x, columns = columns)
@@ -60,7 +58,7 @@ pca = PCA()
 x_pca = pca.fit_transform(x)
 x_pca = pd.DataFrame(pca.components_, columns = x.columns, index = [ 'PC{}'.format(i + 1) for i in range(len(pca.explained_variance_ratio_)) ])
 
-columns = list(set([ x_pca.columns[np.abs(x_pca.loc['PC{}'.format(i + 1), :].values).argmax()] for i in range(len(pca.explained_variance_ratio_)) ]))
+columns = list(set([ x_pca.columns[np.abs(x_pca.loc['PC{}'.format(i + 1), :].values).argmax()] for i in range(min(2, len(pca.explained_variance_ratio_))) ]))
 
 # normalization
 x = overall[columns].values
