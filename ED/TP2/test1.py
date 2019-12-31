@@ -30,7 +30,8 @@ def test(args):
 
     amount = 2000
     for i in range(amount):
-        rf_classifier = RandomForestClassifier(max_depth = 3, min_samples_split = 5,n_estimators = 10, max_features = 'log2', oob_score = False)
+        rf_classifier = RandomForestClassifier(max_depth = 3, min_samples_split = 5,n_estimators = 10, max_features = 'log2',
+                                               oob_score = False)
         mlp_classifier = MLPClassifier(activation = 'tanh', hidden_layer_sizes = (10, 5), alpha = 0.01, max_iter = 5000)
         sgd_classifier = SGDClassifier(loss = 'log', max_iter = 100000)
         linear_svc_classifier = LinearSVC(C = 1.0, max_iter = 100000, tol = 1e-05, verbose = 0)
