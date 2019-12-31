@@ -121,7 +121,6 @@ if __name__ == '__main__':
 
     # apply standard scaling
     x = overall[columns].values
-    # y = overall[[ 'Gender' ]].values
     standard_scaler = StandardScaler()
     x = standard_scaler.fit_transform(x)
     topca = pd.DataFrame(x, columns = columns)
