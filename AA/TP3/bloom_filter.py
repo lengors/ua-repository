@@ -1,12 +1,15 @@
 import random
-from math import sqrt
+from math import sqrt, ceil
 
 class BloomFilter:
 
-    def __init__(self, rel = 8,  k = 5):      # k = num de hash functions
+    def __init__(self, rel = 8,  k = 5):      # k = num de hash functions, rel relação entre numero de palavras e tamanho do filtro
         self.rel = rel
         self.k = k
-        self.primes = [ self.__gen_prime(100, 500) for i in range(self.k) ]
+        self.primes = list()
+        for i in range(2 * self.k):
+            self.primes.append(self.__gen_prime(0, 50, self.primes))
+        
 
 
     def extend(self, lista):
@@ -50,20 +53,23 @@ class BloomFilter:
                 return False
         return True
 
-    def __gen_prime(self, min_range, max_range):
+    def __gen_prime(self, min_range, max_range, non_options = list()):
         lista = list()
         for i in range(min_range, max_range):
-            if self.__is_prime(i):
+            if self.__is_prime(i) and not i in non_options:
                 lista.append(i)
 
         return random.choice(lista)
 
     def __hashf(self, string, index):
-        soma = 0
+        soma = self.primes[index]
         for pos in string:
-            soma += ord(pos) * self.primes[index]
+            soma = soma * self.primes[self.k + index] * ord(pos)
 
         return soma % self.m
 
     def __repr__(self):
         return "n = " + str(self.n) + " ; f = " + str(self.f)
+
+    def __len__(self):
+        return ceil( self.bf.count(1) / self.k)
