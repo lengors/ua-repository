@@ -25,14 +25,6 @@ class BloomFilter:
         for i in range(self.k):
             self.storage[self.__hash(value, i) % self.m] = 1
 
-    def __is_prime(self, n):
-        if n % 2 == 0:
-            return n == 2
-        for i in range(3, n):
-            if n % i == 0:
-                return False
-        return True
-
     def __hash(self, string, index):
         hash = self.primes[index]
         prime = self.primes[self.k + index]
