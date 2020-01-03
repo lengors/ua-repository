@@ -1,75 +1,51 @@
-import random
-from math import sqrt, ceil
+from prime_generator import generate_primes
+import random, math
 
 class BloomFilter:
 
-    def __init__(self, rel = 8,  k = 5):      # k = num de hash functions, rel relação entre numero de palavras e tamanho do filtro
-        self.rel = rel
+    def __init__(self, m,  k = 5):      # k = num de hash functions, rel relação entre numero de palavras e tamanho do filtro
         self.k = k
+        self.m = m
         self.primes = list()
-        for i in range(2 * self.k):
-            self.primes.append(self.__gen_prime(0, 50, self.primes))
-        
+        self.storage = [ 0 ] * m
+        self.primes = generate_primes(self.k << 1, start = 3)
+        random.shuffle(self.primes)
 
-
-    def extend(self, lista):
-        self.__initialize(len(lista))
-        for ele in lista:
-            ele = ele.strip()
-            self.__add(ele)
-        self.__calc_f()
-
-
-    def contains(self, element):
+    def contains(self, value):
         for i in range(self.k):
-            index = self.__hashf(element, i)
-            if self.bf[index] == 0:
+            if self.storage[self.__hash(value, i) % self.m] == 0:
                 return False
         return True
 
-    def __initialize(self, n):
-        self.n = n
-        self.m = self.rel * self.n
-        self.bf = [ 0 for i in range(self.m) ]
+    def extend(self, values):
+        for value in values:
+            self.insert(value)
 
-    def __add(self, element):
+    def insert(self, value):
         for i in range(self.k):
-            index = self.__hashf(element, i)
-            if self.bf[index] == 0:
-                self.bf[index] = 1
-
-    def __calc_f(self):
-        soma = 0
-        for ele in self.bf:
-            soma += 1 if ele == 1 else 0
-        self.f = soma / self.m
+            self.storage[self.__hash(value, i) % self.m] = 1
 
     def __is_prime(self, n):
         if n % 2 == 0:
-            return False
-
+            return n == 2
         for i in range(3, n):
             if n % i == 0:
                 return False
         return True
 
-    def __gen_prime(self, min_range, max_range, non_options = list()):
-        lista = list()
-        for i in range(min_range, max_range):
-            if self.__is_prime(i) and not i in non_options:
-                lista.append(i)
-
-        return random.choice(lista)
-
-    def __hashf(self, string, index):
-        soma = self.primes[index]
-        for pos in string:
-            soma = soma * self.primes[self.k + index] * ord(pos)
-
-        return soma % self.m
+    def __hash(self, string, index):
+        hash = self.primes[index]
+        prime = self.primes[self.k + index]
+        for character in string:
+            hash = hash * prime + ord(character)
+        return hash
 
     def __repr__(self):
         return "n = " + str(self.n) + " ; f = " + str(self.f)
 
     def __len__(self):
-        return ceil( self.bf.count(1) / self.k)
+        return math.ceil(sum(self.storage) / self.k)
+
+    @property
+    def f(self):
+        return sum(self.storage) / self.m
