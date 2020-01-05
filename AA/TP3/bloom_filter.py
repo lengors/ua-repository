@@ -18,12 +18,17 @@ class BloomFilter:
         return True
 
     def extend(self, values):
+        count = 0
         for value in values:
-            self.insert(value)
+            count += self.insert(value)
+        return count
 
     def insert(self, value):
+        if self.contains(value):
+            return 0
         for i in range(self.k):
             self.storage[self.__hash(value, i) % self.m] = 1
+        return 1
 
     def __hash(self, string, index):
         hash = self.primes[index]
@@ -36,7 +41,7 @@ class BloomFilter:
         return "n = " + str(self.n) + " ; f = " + str(self.f)
 
     def __len__(self):
-        return math.ceil(sum(self.storage) / self.k)
+        return round(- (self.m / self.k) * math.log(1 - sum(self.storage) / self.m))
 
     @property
     def f(self):

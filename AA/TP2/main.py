@@ -101,9 +101,7 @@ def main():
         'Mean Abs. Deviation',
         'Maximal Deviation',
         'Standard Deviation',
-        'Variance',
-        'Expected Number Of Events',
-        'Counted Number Of Events'
+        'Variance'
     ]
 
     abbr = [
@@ -119,8 +117,6 @@ def main():
         'MD',
         'SD',
         'Variance',
-        'ExpEvents',
-        'Events'
     ]
 
     metrics_pt = PrettyTable(['Metric', 'Used Abbreviation'])
