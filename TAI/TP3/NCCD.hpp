@@ -1,17 +1,20 @@
+
 #include <string>
 
 class NCCD
 {
 
-    
+    private : 
+       std::string ctx_file;
 
     public : 
         NCCD();
+        NCCD(std::string ctx_file);
         
 
-        float GetFileSize(std::string filename);
 
-        float compress(std::string filename, std::string filename2 = "");
-        // calcs NCD
-        float compute(std::string filename, std::string filename2);
+
+        // calculates NCCD
+        float compute(std::string filename, std::string* files);
+        float compute(std::string filename, int id);
 };

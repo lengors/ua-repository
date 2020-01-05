@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "NCD.hpp"
+#include "NCCD.hpp"
 #include <map>
 #include <iterator>
 #include <algorithm>
@@ -31,7 +32,7 @@ int main(int args, char *argv[]){
         for (int j = 1; j < 11; j++){
             std::string aux = j < 10 ? "0" + std::to_string(j) : std::to_string(j);
             std::cout << "s" + face + "/" + aux + ".pgm" << std::endl;
-            value += ncd->compute(img, directory + "s" + face + "/" + aux + ".pgm");
+            //value += ncd->compute(img, directory + "s" + face + "/" + aux + ".pgm");
         }
         float avg = value / 10;
         computations.insert(std::pair<std::string, float>("s" + face, avg));
@@ -46,6 +47,8 @@ int main(int args, char *argv[]){
     std::pair<std::string, float> min = *std::min_element(computations.begin(), computations.end(), compare); 
     std::cout << "The person in the picture is " << min.first << " " << std::endl;
 
+    NCCD* nccd = new NCCD();
+    std::cout << "NCCD value of person 01: " << nccd->compute(img,1) << std::endl;
     /*
     float value = ncd->compute(img_name, "02.pgm");
     std::cout << value << std::endl;
