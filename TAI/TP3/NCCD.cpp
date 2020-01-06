@@ -40,9 +40,9 @@ float NCCD::compute(std::string filename1, int id){
 	else
 		idString = "0"+std::to_string(id);
 
-	std::string filename = "ImgCondComp/orl_faces/s"+ idString +"/"+ idString+".pgm";
+	//std::string filename = "ImgCondComp/orl_faces/s"+ idString +"/"+ idString+".pgm";
 	std::string files[3] = {"ImgCondComp/orl_faces/s"+ idString +"/01.pgm","ImgCondComp/orl_faces/s"+ idString +"/02.pgm","ImgCondComp/orl_faces/s"+ idString +"/03.pgm"};
 
 
-	return compute(filename,files);
+	return compute(filename1,files);
 }

@@ -32,7 +32,7 @@ int main(int args, char *argv[]){
         for (int j = 1; j < 11; j++){
             std::string aux = j < 10 ? "0" + std::to_string(j) : std::to_string(j);
             std::cout << "s" + face + "/" + aux + ".pgm" << std::endl;
-            //value += ncd->compute(img, directory + "s" + face + "/" + aux + ".pgm");
+            value += ncd->compute(img, directory + "s" + face + "/" + aux + ".pgm");
         }
         float avg = value / 10;
         computations.insert(std::pair<std::string, float>("s" + face, avg));
@@ -48,7 +48,18 @@ int main(int args, char *argv[]){
     std::cout << "The person in the picture is " << min.first << " " << std::endl;
 
     NCCD* nccd = new NCCD();
-    std::cout << "NCCD value of person 01: " << nccd->compute(img,1) << std::endl;
+   
+    float value = -1;
+    int id = 0;
+    for (int i = 1; i < 41; i++){
+    	float temp = nccd->compute(img,i);
+    	std::cout << "Person " << i << " has a score of :" << temp << std::endl;
+    	if ((value > temp) || (value == -1)){
+    		value = temp;
+    		id = i;
+    	}
+    }
+     std::cout << "The person is : " << id << std::endl;
     /*
     float value = ncd->compute(img_name, "02.pgm");
     std::cout << value << std::endl;
