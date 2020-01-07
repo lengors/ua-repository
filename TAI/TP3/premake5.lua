@@ -74,12 +74,55 @@ project "resize"
         "opencv_highgui"
 
     }
+    
 project "test"
+    location "config/%{prj.name}"
     kind "ConsoleApp"
     language "C++"
-    files{
-        "src/test.cpp"
+    cppdialect "C++11"
+    staticruntime "on"
+
+    targetdir ("bin/")
+    objdir ("int/")
+
+    files
+    {
+        "src/%{prj.name}.cpp",
+        
     }
+
+    includedirs
+    {
+        "include"
+    }
+
+    links
+    {
+        "NCCD",
+        "NCD",
+        "opencv_core",
+        "opencv_imgcodecs",
+        "opencv_imgproc",
+        "opencv_highgui"
+        
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+
+    filter "system:linux"
+        systemversion "latest"
+
+    filter "system:macosx"
+        systemversion "latest"
+
+    filter "configurations:debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:release"
+        runtime "Release"
+        optimize "on"
     
 project "NCCD"
     kind "StaticLib"

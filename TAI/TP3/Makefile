@@ -50,10 +50,10 @@ ifneq (,$(resize_config))
 	@${MAKE} --no-print-directory -C . -f resize.make config=$(resize_config)
 endif
 
-test:
+test: NCCD NCD
 ifneq (,$(test_config))
 	@echo "==== Building test ($(test_config)) ===="
-	@${MAKE} --no-print-directory -C . -f test.make config=$(test_config)
+	@${MAKE} --no-print-directory -C config/test -f Makefile config=$(test_config)
 endif
 
 NCCD:
@@ -66,7 +66,7 @@ clean:
 	@${MAKE} --no-print-directory -C config/main -f Makefile clean
 	@${MAKE} --no-print-directory -C . -f NCD.make clean
 	@${MAKE} --no-print-directory -C . -f resize.make clean
-	@${MAKE} --no-print-directory -C . -f test.make clean
+	@${MAKE} --no-print-directory -C config/test -f Makefile clean
 	@${MAKE} --no-print-directory -C . -f NCCD.make clean
 
 help:

@@ -20,7 +20,7 @@ endif
 
 RESCOMP = windres
 TARGETDIR = ../../bin
-TARGET = $(TARGETDIR)/main
+TARGET = $(TARGETDIR)/test
 DEFINES +=
 INCLUDES += -I../../include
 FORCE_INCLUDE +=
@@ -35,7 +35,7 @@ define POSTBUILDCMDS
 endef
 
 ifeq ($(config),debug)
-OBJDIR = ../../int/debug/main
+OBJDIR = ../../int/debug/test
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++11
 LIBS += ../../bin/debug/libNCCD.a ../../bin/debug/libNCD.a -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_highgui
@@ -43,7 +43,7 @@ LDDEPS += ../../bin/debug/libNCCD.a ../../bin/debug/libNCD.a
 ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
 
 else ifeq ($(config),release)
-OBJDIR = ../../int/release/main
+OBJDIR = ../../int/release/test
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++11
 LIBS += ../../bin/release/libNCCD.a ../../bin/release/libNCD.a -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_highgui
@@ -63,7 +63,7 @@ endif
 
 OBJECTS :=
 
-OBJECTS += $(OBJDIR)/main.o
+OBJECTS += $(OBJDIR)/test.o
 
 # Rules
 # #############################################
@@ -73,7 +73,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJECTS) $(LDDEPS) | $(TARGETDIR)
 	$(PRELINKCMDS)
-	@echo Linking main
+	@echo Linking test
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -94,7 +94,7 @@ else
 endif
 
 clean:
-	@echo Cleaning main
+	@echo Cleaning test
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -125,7 +125,7 @@ endif
 # File Rules
 # #############################################
 
-$(OBJDIR)/main.o: ../../src/main.cpp
+$(OBJDIR)/test.o: ../../src/test.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
