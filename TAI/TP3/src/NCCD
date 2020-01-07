@@ -1,5 +1,0 @@
-#!/bin/bash
-echo "test"
-Cy= ImgCondComp/bin/ImgCondComp -q 32 -tc ctx1 -t $1 -t $2 -t $3 | grep "Total target" | cut -d" " -f4
-Cylx= ImgCondComp/bin/ImgCondComp -q 32 -rc ctx1 -tc ctx1 -r $1 -t $2 -t $3 -t $4 | grep "Total target" | cut -d" " -f4
-echo "scale = 4; $Cylx / $Cy" | bc -l

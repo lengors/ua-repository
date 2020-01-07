@@ -22,7 +22,11 @@ NCCD::NCCD(std::string dataset){
 // ./NCCD3 01.pgm 01.pgm 01.pgm 01.pgm
 float NCCD::compute(std::string filename1, std::string* files){
 	
-	std::string command = "./NCCD3 " + filename1 +" "+ files[0] +" "+ files[1] +" "+ files[2] + " " + ctx_file;
+	std::string command = "./NCCD3 " + filename1 +" "; //+ files[0] +" "+ files[1] +" "+ files[2] + " " + ctx_file;
+	for (int i = 0; i < 3; i++){
+		command += " "+ files[i];
+	}
+	command += " " + ctx_file;
 	
 	FILE *output = popen (command.c_str() , "r");
 	char buffer [100];
@@ -34,27 +38,30 @@ float NCCD::compute(std::string filename1, std::string* files){
 	     {
 	       if ( fgets (buffer , 100 , output) == NULL ) break;
 
-	      
+	       fclose (output);
 	       return std::stof(buffer);
 	       
 	     }
 	     
 	   }
+	 
 
 }
 
 
 float NCCD::compute(std::string filename1, int id){
-	std::string idString;
 	
-	if (id >= 10)
-		idString =std::to_string(id);
-	else
-		idString = "0"+std::to_string(id);
+	std::string idString = id < 10 ? "0"+std::to_string(id) : std::to_string(id);
+	
 
 	//std::string filename = "ImgCondComp/orl_faces/s"+ idString +"/"+ idString+".pgm";
-	std::string files[3] = {directory+"s"+ idString +"/01.pgm",directory+"s"+ idString +"/02.pgm",directory+"s"+ idString +"/03.pgm"};
+	std::string files[3];
+	for (int i = 0; i < 3; i++){
+		std::string id = i< 10 ? "0"+std::to_string(i+4) : std::to_string(i+4);
+		files[i] = directory+"s"+idString+"/"+id+".pgm";
+	}	
 
 
 	return compute(filename1,files);
+	
 }

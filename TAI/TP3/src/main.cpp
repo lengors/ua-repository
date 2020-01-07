@@ -47,7 +47,7 @@ int main(int args, char *argv[]){
     std::pair<std::string, float> min = *std::min_element(computations.begin(), computations.end(), compare); 
     std::cout << "NCD result: " << min.first << " " << std::endl;
 
-    /*
+    
     NCCD* nccd = new NCCD(directory);
    
     float value = -1;
