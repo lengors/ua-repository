@@ -19,12 +19,12 @@ std::pair<std::string, float> computeNCD(std::string pic, std::string directory)
 	for (int i = 1; i < 41; i++){
         std::string face = i < 10 ? "0" + std::to_string(i) : std::to_string(i);
         float value = 0;
-        for (int j = 4; j < 11; j++){
+        for (int j = 7; j < 11; j++){
             std::string aux = j < 10 ? "0" + std::to_string(j) : std::to_string(j);
             
             value += ncd->compute(pic, directory + "s" + face + "/" + aux + ".pgm");
         }
-        float avg = value / 7;
+        float avg = value / 3;
         computations.insert(std::pair<std::string, float>("s" + face, avg));
     }
 	
@@ -53,7 +53,7 @@ int main(int args, char *argv[]){
 		return -1;
 	}
 	std::string directory = argv[1];
-	std::string faces[3] = {"01.pgm","02.pgm","03.pgm"};
+	std::string faces[3] = {"01.pgm","02.pgm","03.pgm", "04.pgm", "05.pgm", "06.pgm", "07.pgm"};
 	int datasetSize = 40;
 	int ncd[datasetSize];
 	int nccd[datasetSize];
@@ -63,7 +63,7 @@ int main(int args, char *argv[]){
 		nccd[i - 1] = 0;
         std::string face = "s" + (i < 10 ? "0" + std::to_string(i) : std::to_string(i));
 
-		for (int j = 1; j < 4; j++){
+		for (int j = 1; j < 7; j++){
 			std::cout << face + " - image : " + faces[j - 1] << std::endl;
 			std::string pic = directory + face + "/" + faces[j - 1];
 			std::pair<std::string, float> min = computeNCD(pic, directory);
