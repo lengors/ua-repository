@@ -1,0 +1,120 @@
+Test Subject: 1
+ncd face  = 2
+nccd face  = 6
+Test Subject: 2
+ncd face  = 7
+nccd face  = 2
+Test Subject: 3
+ncd face  = 3
+nccd face  = 7
+Test Subject: 4
+ncd face  = 2
+nccd face  = 6
+Test Subject: 5
+ncd face  = 6
+nccd face  = 0
+Test Subject: 6
+ncd face  = 7
+nccd face  = 0
+Test Subject: 7
+ncd face  = 4
+nccd face  = 4
+Test Subject: 8
+ncd face  = 7
+nccd face  = 7
+Test Subject: 9
+ncd face  = 0
+nccd face  = 7
+Test Subject: 10
+ncd face  = 7
+nccd face  = 5
+Test Subject: 11
+ncd face  = 7
+nccd face  = 5
+Test Subject: 12
+ncd face  = 6
+nccd face  = 4
+Test Subject: 13
+ncd face  = 6
+nccd face  = 7
+Test Subject: 14
+ncd face  = 7
+nccd face  = 6
+Test Subject: 15
+ncd face  = 0
+nccd face  = 3
+Test Subject: 16
+ncd face  = 4
+nccd face  = 2
+Test Subject: 17
+ncd face  = 2
+nccd face  = 2
+Test Subject: 18
+ncd face  = 7
+nccd face  = 4
+Test Subject: 19
+ncd face  = 7
+nccd face  = 7
+Test Subject: 20
+ncd face  = 3
+nccd face  = 5
+Test Subject: 21
+ncd face  = 5
+nccd face  = 7
+Test Subject: 22
+ncd face  = 7
+nccd face  = 0
+Test Subject: 23
+ncd face  = 3
+nccd face  = 7
+Test Subject: 24
+ncd face  = 7
+nccd face  = 2
+Test Subject: 25
+ncd face  = 6
+nccd face  = 6
+Test Subject: 26
+ncd face  = 1
+nccd face  = 5
+Test Subject: 27
+ncd face  = 6
+nccd face  = 6
+Test Subject: 28
+ncd face  = 6
+nccd face  = 3
+Test Subject: 29
+ncd face  = 2
+nccd face  = 5
+Test Subject: 30
+ncd face  = 7
+nccd face  = 7
+Test Subject: 31
+ncd face  = 5
+nccd face  = 4
+Test Subject: 32
+ncd face  = 6
+nccd face  = 5
+Test Subject: 33
+ncd face  = 5
+nccd face  = 7
+Test Subject: 34
+ncd face  = 5
+nccd face  = 3
+Test Subject: 35
+ncd face  = 2
+nccd face  = 6
+Test Subject: 36
+ncd face  = 0
+nccd face  = 2
+Test Subject: 37
+ncd face  = 2
+nccd face  = 1
+Test Subject: 38
+ncd face  = 6
+nccd face  = 3
+Test Subject: 39
+ncd face  = 2
+nccd face  = 7
+Test Subject: 40
+ncd face  = 1
+nccd face  = 5
