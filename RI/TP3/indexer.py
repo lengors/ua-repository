@@ -1,184 +1,154 @@
-from collections import defaultdict, Counter, OrderedDict
-from CorpusReader import CorpusReader
-import math
-import sys
-import psutil
-import os
-from Tokenizer import Tokenizer
-from Index import Index
+from corpus_reader import CorpusReader
+from index import Index
+
+# python modules
+import psutil, os, gc, shutil, math
 
 
 class Indexer:
+    def __init__(self, index: Index, index_folder: str, max_memory_usage: float = 20):
+        self.__index = index
+        self.__documents = dict()
+        self.__max_memory_usage = max_memory_usage
+        self.__process = psutil.Process(os.getpid())
+        self.__temp_index_folder = os.path.join(index_folder, 'blocks')
+        self.__segm_index_folder = os.path.join(index_folder, 'segments')
 
-    def __init__(self, writing_method: int = 0, positional: int = 0, output_path: str = 'index/',
-                 block_max_size: float = 1000000, option: int = 2):
-        self.index = Index(writing_method, positional, Tokenizer(option))
-        self.writing_method = writing_method
-        self.positional = positional
-        self.parse = self.index.parse_line
-        self.k = 1.2
-        self.b = 0.75
-        self.avdl = 0
-        self.block_max_size = block_max_size
-        self.docs_dl = OrderedDict()
-        self.output_path = output_path
-        self.size = 0
-        self.temp_folder = 'index_blocks/'
-        os.makedirs(self.temp_folder)
-        if not os.path.isdir(output_path):
-            os.makedirs(output_path)
+    def __dispatch(self):
+        self.__index.sort()
+        self.__ensure_folders()
+        filename = os.path.join(self.__temp_index_folder, 'block-{}'.format(len(os.listdir(self.__temp_index_folder))))
+        with open(filename, 'w') as fout:
+            fout.write(str(self.__index))
+        self.__index.reset()
+        gc.collect()
 
-    # Creates index
-    def create_index(self, corpus: CorpusReader):
-        writing_method = self.writing_method
-        update_index = self.index.update_index
-        write_block_to_file = self.write_block_to_file
-        clear_index = self.index.clear
-        block_max_size = self.block_max_size
-        self.size = len(corpus.doc_list)
-        size = self.size
-        numb_blocks = 0
+    def __ensure_folders(self):
+        if not os.path.isdir(self.__temp_index_folder):
+            os.makedirs(self.__temp_index_folder)
+        if not os.path.isdir(self.__segm_index_folder):
+            os.makedirs(self.__segm_index_folder)
 
-        for doc in corpus.doc_list:
+    def __flush(self, segments, output: list, output_file, output_filename: str):
+        segments.append((output[0][0], output[-1][0], output_filename, len(output)))
+        output_file.write('{}\n'.format('\n'.join([line for _, line in output])))
+        output_file.close()
+        output.clear()
 
-            update_index(doc.cord_uid, doc)
-
-            if writing_method == 3:
-                self.docs_dl[doc.cord_uid] = len(doc.list_tokens)
-
-            if sys.getsizeof(self.index) > block_max_size or (self.index == size - 1):
-                if writing_method == 3:
-                    self.avdl = sum(self.docs_dl.values()) / len(self.docs_dl)
-                write_block_to_file(numb_blocks)
-                numb_blocks += 1
-                clear_index()
-
-        if writing_method == 3:
-            self.avdl = sum(self.docs_dl.values()) / len(self.docs_dl)
-
-    # Writes index to file
-    def write_block_to_file(self, numb_blocks):
-        file_path = os.path.join(self.temp_folder, 'block_{}'.format(numb_blocks))
-        write_term = self.index.write_term_line
-        with open(file_path, "w+", encoding='utf-8') as file:
-            write = file.write
-            for term in self.index.tokens:
-                write(self.index.write_term_line(term))
-        file.close()
-
-    def get_term_line(self, tokens, lines, files):
-        x, term_line = min(enumerate(lines), key=lambda l: l[1][0])
-        if x >= len(files):
-            if len(tokens) > 0:
-                lines[x] = tokens.popitem(0)
+    def __get_line(self, terms, lines, files, parse_func):
+        i, line = min(enumerate(lines), key=lambda line: line[1][0])
+        if i >= len(files):
+            if len(terms) > 0:
+                lines[i] = terms.popitem(0)
             else:
-                lines.pop(x)
+                lines.pop(i)
         else:
-            other_term_line = files[x].readline()
-            if not other_term_line or len(other_term_line.strip()) == 0:
-                lines.pop(x)
-                files[x].close()
-                files.pop(x)
+            new_line = files[i].readline()
+            if not new_line or len(new_line.strip()) == 0:
+                lines.pop(i)
+                files[i].close()
+                files.pop(i)
             else:
-                lines[x] = self.index.parse_line(other_term_line)
-        return term_line
+                lines[i] = parse_func(new_line)
+        return line
 
-    def write_ranked(self, term):
-        return self.index.write_term_line(self.rank_term(term))
+    def __rank(self, line: tuple):
+        term, documents = line
+        count = self.__index.count
+        idf = math.log10(len(self.__documents) / len(documents))
+        for pmid, extra in documents.items():
+            weight = 1 + math.log10(count(extra))
+            self.__documents[pmid] += weight * weight
+            documents[pmid] = (weight, extra)
+        return (term, (idf, documents))
 
-    def rank_term(self, term: tuple):
-        size = self.size
-        k = self.k
-        b = self.b
-        avdl = self.avdl
-        token, docs = term
-        df = len(docs.keys())
-        idf = math.log10(size / df)
+    def __write_forced_ranked(self, line: tuple):
+        return self.__index.write_ranked(self.__rank(line))
 
-        for cord_uid, positions in docs.items():
-            if self.writing_method == 2:
-                if self.positional == 0:
-                    weight = (1 + math.log10(positions)) * idf
-                else:
-                    weight = (1 + math.log10(len(positions))) * idf
+    def index(self, corpus_reader: CorpusReader):
+        update = self.__index.update
+        for pmid, document in corpus_reader.items():
+            update(pmid, document)
+            self.__documents.setdefault(pmid, 0)
+            if self.__process.memory_percent() >= self.__max_memory_usage:
+                self.__dispatch()
 
-            else:
-                if self.positional == 0:
-                    weight = (math.log10(size / df) *
-                              (((k + 1) * positions) /
-                               (k * ((1 - b) + b * (self.docs_dl[cord_uid] / avdl)) + positions)))
-                else:
-                    weight = (math.log10(size / df) *
-                              (((k + 1) * len(positions)) /
-                               (k * ((1 - b) + b * (self.docs_dl[cord_uid] / avdl)) + len(positions))))
-            docs[cord_uid] = (weight, positions)
-        return term, (idf, docs)
+    def merge(self, calculate_tfidf: bool = False):
+        # select which function to use
+        write = self.__write_forced_ranked if calculate_tfidf else self.__index.write
+        parse = self.__index.parse
+        merge = self.__index.merge
 
-    def merge_blocks(self):
+        # sort in-memory terms if necessary
+        self.__index.sort()
 
-        tokens = self.index.tokens
-        parts = self.index.parts
-        if self.writing_method == 2 or self.writing_method == 3:
-            write = self.write_ranked
-        else:
-            write = self.index.write_term_line
-        parts.clear()
+        terms = self.__index.terms
+        segments = self.__index.segments
 
-        filenames = [filename for filename in [os.path.join(self.temp_folder, filename) for filename in
-                                               os.listdir(self.temp_folder)] if os.path.isfile(filename)]
+        # clear segments
+        segments.clear()
+
+        # ensures folders exist
+        self.__ensure_folders()
+
+        # get in disk blocks
+        filenames = [filename for filename in [os.path.join(self.__temp_index_folder, filename) for filename in
+                                               os.listdir(self.__temp_index_folder)] if os.path.isfile(filename)]
         files = [open(filename, 'r') for filename in filenames]
 
-        output_filename = os.path.join(self.output_path, 'index_part{}'.format(len(os.listdir(self.output_path))))
+        # output file
+        output_filename = os.path.join(self.__segm_index_folder,
+                                       'segment-{}'.format(len(os.listdir(self.__segm_index_folder))))
         output_file = open(output_filename, 'w')
 
+        # current term for each sorted block
         lines = [parse(line) for line in [file.readline() for file in files] if line and len(line.strip()) > 0]
+        if len(terms) > 0:
+            lines.append(terms.popitem(0))
 
-        if len(tokens) > 0:
-            lines.append(tokens.popitem(0))
-
+        # temporary list to store terms before writing them to disk
         output = list()
 
-        term = self.get_term_line(tokens, lines, files)
+        # gets first term (in order)
+        cline = self.__get_line(terms, lines, files, parse)
 
-        # while there are terms to process
+        # while terms to process are available
         while len(lines) > 0:
 
-            # next term
-            next_term = self.get_term_line(tokens, lines, files)
+            # gets next term (in order)
+            line = self.__get_line(terms, lines, files, parse)
 
-            if next_term[0] == term[0]:
+            # checks if current term and next term are mergable
+            if line[0] == cline[0]:
 
-                # merges the terms
-                if self.positional == 0:
-                    merged = {k: term[1].get(k, 0) + next_term[1].get(k, 0) for k in term[1].keys() | next_term[1].keys()}
-                else:
-                    merged = {k: sorted(term[1].get(k, []) + next_term[1].get(k, [])) for k in
-                              term[1].keys() | next_term[1].keys()}
+                # merges them
+                cline = (cline[0], merge(cline[1], line[1]))
 
-                term = (term[0], merged)
-
+            # else
             else:
-                # stores string version of term
-                output.append((term[0], write(term)))
+                # stores stringified version of term (and associated data)
+                output.append((cline[0], write(cline)))
 
                 # if too much memory in use then write to file stored terms
                 if self.__process.memory_percent() >= self.__max_memory_usage:
-                    self.__flush(parts, output, output_file, output_filename)
-                    output_filename = os.path.join(self.output_path,
-                                                   'index_part-{}'.format(len(os.listdir(self.output_path))))
+                    self.__flush(segments, output, output_file, output_filename)
+                    output_filename = os.path.join(self.__segm_index_folder,
+                                                   'segment-{}'.format(len(os.listdir(self.__segm_index_folder))))
                     output_file = open(output_filename, 'w')
                     gc.collect()
 
                 # update current term
-                term = next_term
+                cline = line
 
-        # stores string version of last term
-        output.append((term[0], write(term)))
+        # stores stringified version of last term
+        output.append((cline[0], write(cline)))
 
-        self.__flush(parts, output, output_file, output_filename)
+        self.__flush(segments, output, output_file, output_filename)
 
         # deletes temporary blocks in disk
-        shutil.rmtree(self.temp_folder)
+        shutil.rmtree(self.__temp_index_folder)
 
-        if self.writing_method == 2 or self.writing_method == 3:
-            self.index.normalization(self.docs_dl)
+        # sets if the data is ranked or not
+        if calculate_tfidf:
+            self.__index.ranked = True
+            self.__index.normalize(self.__documents)
